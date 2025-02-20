@@ -11,6 +11,9 @@
 			"item": [
 				{
 					"name": "Register User",
+					"protocolProfileBehavior": {
+						"disableCookies": false
+					},
 					"request": {
 						"method": "POST",
 						"header": [
@@ -21,9 +24,9 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@mail.com\",\n    \"password\": \"password123\",\n    \"role\": \"FARMER\"\n}"
+							"raw": "{\n    \"username\": \"testuser22\",\n    \"email\": \"testuser22@mail.com\",\n    \"password\": \"password123\",\n    \"role\": \"USER\"\n}"
 						},
-						"url": "{{baseUrl}}/api/auth/register"
+						"url": "{{baseUrl}}/api/auth/register/user"
 					},
 					"response": [
 						{
@@ -38,12 +41,12 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@mail.com\",\n    \"password\": \"password123\",\n    \"role\": \"FARMER\"\n}"
+									"raw": "{\n    \"username\": \"testuser22\",\n    \"email\": \"testuser22@mail.com\",\n    \"password\": \"password123\",\n    \"role\": \"USER\"\n}"
 								},
-								"url": "{{baseUrl}}/api/auth/register"
+								"url": "{{baseUrl}}/api/auth/register/user"
 							},
-							"status": "Created",
-							"code": 201,
+							"status": "OK",
+							"code": 200,
 							"_postman_previewlanguage": "json",
 							"header": [
 								{
@@ -80,7 +83,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Tue, 18 Feb 2025 13:54:29 GMT"
+									"value": "Thu, 20 Feb 2025 09:19:11 GMT"
 								},
 								{
 									"key": "Keep-Alive",
@@ -92,7 +95,97 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"id\": 2,\n    \"username\": \"testuser\",\n    \"email\": \"testuser@mail.com\",\n    \"role\": \"FARMER\"\n}"
+							"body": "{\n    \"id\": 1,\n    \"username\": \"testuser22\",\n    \"email\": \"testuser22@mail.com\",\n    \"role\": \"USER\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Register Farmer",
+					"protocolProfileBehavior": {
+						"disableCookies": false
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_farmer\",\n  \"email\": \"john@example.com\",\n  \"password\": \"securepassword\",\n  \"farmName\": \"Green Valley Farm\",\n  \"role\": \"FARMER\",\n  \"address\": {\n    \"country\": \"USA\",\n    \"city\": \"Los Angeles\",\n    \"street\": \"Sunset Blvd\",\n    \"houseNumber\": \"25B\",\n    \"zipCode\": \"90001\"\n  },\n  \"location\": {\n    \"latitude\": 34.052235,\n    \"longitude\": -118.243683\n  }\n}\n\n"
+						},
+						"url": "{{baseUrl}}/api/auth/register/farmer"
+					},
+					"response": [
+						{
+							"name": "Register Farmer",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"john_farmer\",\n  \"email\": \"john@example.com\",\n  \"password\": \"securepassword\",\n  \"farmName\": \"Green Valley Farm\",\n  \"role\": \"FARMER\",\n  \"address\": {\n    \"country\": \"USA\",\n    \"city\": \"Los Angeles\",\n    \"street\": \"Sunset Blvd\",\n    \"houseNumber\": \"25B\",\n    \"zipCode\": \"90001\"\n  },\n  \"location\": {\n    \"latitude\": 34.052235,\n    \"longitude\": -118.243683\n  }\n}\n\n"
+								},
+								"url": "{{baseUrl}}/api/auth/register/farmer"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Feb 2025 09:19:17 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 2,\n    \"username\": \"john_farmer\",\n    \"email\": \"john@example.com\",\n    \"role\": \"FARMER\",\n    \"farmName\": \"Green Valley Farm\",\n    \"address\": {\n        \"country\": \"USA\",\n        \"city\": \"Los Angeles\",\n        \"street\": \"Sunset Blvd\",\n        \"houseNumber\": \"25B\",\n        \"zipCode\": \"90001\"\n    },\n    \"location\": {\n        \"latitude\": 34.052235,\n        \"longitude\": -118.243683\n    }\n}"
 						}
 					]
 				},
@@ -167,7 +260,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Tue, 18 Feb 2025 13:55:58 GMT"
+									"value": "Thu, 20 Feb 2025 09:34:19 GMT"
 								},
 								{
 									"key": "Keep-Alive",
@@ -179,7 +272,162 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@mail.com\",\n    \"password\": null,\n    \"role\": \"FARMER\"\n}"
+							"body": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@mail.com\",\n    \"role\": \"USER\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login Farmer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"securepassword\"\n}"
+						},
+						"url": "{{baseUrl}}/api/auth/login"
+					},
+					"response": [
+						{
+							"name": "Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"testuser@mail.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": "{{baseUrl}}/api/auth/login"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Feb 2025 09:34:19 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@mail.com\",\n    \"role\": \"USER\"\n}"
+						},
+						{
+							"name": "Login Copy",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"securepassword\"\n}"
+								},
+								"url": "{{baseUrl}}/api/auth/login"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Feb 2025 09:55:34 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"username\": \"john_farmer\",\n    \"email\": \"john@example.com\",\n    \"role\": \"FARMER\"\n}"
 						}
 					]
 				},
@@ -347,11 +595,137 @@
 				{
 					"name": "Get User by ID",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"username": "updateduser",
+								"password": "password123"
+							}
+						},
 						"method": "GET",
 						"header": [],
 						"url": "{{baseUrl}}/api/users/1"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Get User by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseUrl}}/api/users/1"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Feb 2025 15:45:26 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"username\": \"updateduser\",\n    \"email\": \"updateduser@mail.com\",\n    \"role\": \"ADMIN\"\n}"
+						},
+						{
+							"name": "Get User by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseUrl}}/api/users/3"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Feb 2025 09:22:19 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"username\": \"testuser\",\n    \"email\": \"testuser@mail.com\",\n    \"role\": \"USER\"\n}"
+						}
+					]
 				},
 				{
 					"name": "Get User by Username",
@@ -378,20 +752,223 @@
 						},
 						"url": "{{baseUrl}}/api/users/1"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Update User",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"updateduser\",\n    \"email\": \"updateduser@mail.com\"\n}"
+								},
+								"url": "{{baseUrl}}/api/users/1"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Feb 2025 15:44:42 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"username\": \"updateduser\",\n    \"email\": \"updateduser@mail.com\",\n    \"role\": \"ADMIN\"\n}"
+						},
+						{
+							"name": "Update User",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"updateduser\",\n    \"email\": \"updateduser@mail.com\"\n}"
+								},
+								"url": "{{baseUrl}}/api/users/3"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Feb 2025 09:23:14 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"username\": \"updateduser\",\n    \"email\": \"updateduser@mail.com\",\n    \"role\": \"USER\"\n}"
+						}
+					]
 				},
 				{
 					"name": "Delete User",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"username": "updateduser",
+								"password": "password123"
+							}
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": "{{baseUrl}}/api/users/1"
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Delete User",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{baseUrl}}/api/users/1"
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Feb 2025 15:45:55 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
 				},
 				{
 					"name": "Change Password",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"username": "updateduser",
+								"password": "password123"
+							}
+						},
 						"method": "PUT",
 						"header": [
 							{
