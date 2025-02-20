@@ -1,0 +1,202 @@
+
+{
+  "info": {
+    "_postman_id": "12345-67890-abcdef",
+    "name": "GoodsService API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["products"]
+        }
+      }
+    },
+    {
+      "name": "Get Product By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Organic Apples\",\n  \"description\": \"Fresh organic apples from the farm\",\n  \"price\": 3.99,\n  \"quantity\": 100,\n  \"expiryDate\": \"2024-12-31T23:59:59\",\n  \"id_farmer\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["products"]
+        }
+      }
+    },
+    {
+      "name": "Update Product",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Organic Apples\",\n  \"description\": \"Fresh organic apples from the farm\",\n  \"price\": 4.99,\n  \"quantity\": 150,\n  \"expiryDate\": \"2024-12-31T23:59:59\",\n  \"id_farmer\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/products/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Product",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Farmers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/farmers",
+          "host": ["{{baseUrl}}"],
+          "path": ["farmers"]
+        }
+      }
+    },
+    {
+      "name": "Get Farmer By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/farmers/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["farmers", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Farmer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"farmName\": \"Doe's Farm\",\n  \"location\": \"123 Farm Lane, Countryside\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/farmers",
+          "host": ["{{baseUrl}}"],
+          "path": ["farmers"]
+        }
+      }
+    },
+    {
+      "name": "Update Farmer",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"farmName\": \"Doe's Farm\",\n  \"location\": \"123 Farm Lane, Countryside\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/farmers/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["farmers", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Farmer",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/farmers/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["farmers", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
