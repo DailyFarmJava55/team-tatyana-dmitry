@@ -8,10 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import telran.dailyFarm.accounting.dto.farmer.FarmerDto;
-import telran.dailyFarm.accounting.model.farmer.Farmer;
-
-
 @Configuration
 public class ServiceConfiguration {
 	@Bean
