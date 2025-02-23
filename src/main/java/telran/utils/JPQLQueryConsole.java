@@ -1,14 +1,17 @@
 package telran.utils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This class represents simple console of multi-line SQL and JPQL queries.
