@@ -5,11 +5,11 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import telran.dailyFarm.accounting.dto.farmer.FarmerDto;
-import telran.dailyFarm.accounting.model.farmer.Farmer;
+
+import telran.auth.account.dto.FarmerDto;
+import telran.auth.account.model.User;
+
 
 
 @Configuration
@@ -21,15 +21,10 @@ public class ServiceConfiguration {
 									.setFieldMatchingEnabled(true)
 									.setFieldAccessLevel(AccessLevel.PRIVATE)
 									.setMatchingStrategy(MatchingStrategies.STRICT);
-		modelMapper.typeMap(Farmer.class, FarmerDto.class).addMappings(mapper -> {
-	        mapper.map(Farmer::getAddress, FarmerDto::setAddress);
-	        mapper.map(Farmer::getLocation, FarmerDto::setLocation);
+		modelMapper.typeMap(User.class, FarmerDto.class).addMappings(mapper -> {
+	        mapper.map(User::getLocation, FarmerDto::setLocation);
 	    });
 		return modelMapper;
 		}
-		@Bean
-		PasswordEncoder getPasswordEncoder() {
-			return new BCryptPasswordEncoder();
 		
-	}
 }
