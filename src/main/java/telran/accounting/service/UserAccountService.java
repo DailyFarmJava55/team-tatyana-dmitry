@@ -2,8 +2,11 @@ package telran.accounting.service;
 
 import org.springframework.stereotype.Service;
 
-import telran.dailyFarm.accounting.dto.user.UserDto;
-import telran.dailyFarm.accounting.dto.user.UserEditDto;
+import jakarta.validation.Valid;
+import telran.accounting.dto.UserDto;
+import telran.accounting.dto.UserEditDto;
+import telran.accounting.dto.UserRegisterDto;
+
 
 @Service
 public interface UserAccountService {
@@ -16,5 +19,7 @@ public interface UserAccountService {
 	UserDto findByUsername(String username);
 	
 	void changePassword(String email, String newPassword);
+
+	UserDto registerUser(@Valid UserRegisterDto userRegisterDto);
 	
 }
