@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor 
 @NoArgsConstructor
-public class UserDto {
+public class FarmerDto {
 	UUID id;
 	String email;
 	LocalDateTime registrationDate;
 	LocalDateTime lastEditDate;
 	LocalDateTime lastAccessDate;
-
+	String farmName;
+	LocationDto location;
 }

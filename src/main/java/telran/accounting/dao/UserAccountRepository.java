@@ -9,4 +9,6 @@ import telran.accounting.model.UserAccount;
 
 public interface UserAccountRepository extends JpaRepository<UserAccount, UUID>{
 
+	boolean existsByEmail(String email);
+
 }
