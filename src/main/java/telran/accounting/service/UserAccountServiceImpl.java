@@ -1,12 +1,25 @@
 package telran.accounting.service;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import telran.accounting.dto.UserDto;
 import telran.accounting.dto.UserEditDto;
 import telran.accounting.dto.UserRegisterDto;
+import telran.java55.accounting.dao.UserAccountRepository;
 
+
+@Service
+@RequiredArgsConstructor
 public class UserAccountServiceImpl implements UserAccountService {
-
+	
+	final UserAccountRepository userAccountRepository;
+	final ModelMapper modelMapper;
+	final PasswordEncoder passwordEncoder;
+	
 	@Override
 	public UserDto getUserById(Long id) {
 		// TODO Auto-generated method stub
@@ -39,7 +52,9 @@ public class UserAccountServiceImpl implements UserAccountService {
 
 	@Override
 	public UserDto registerUser(@Valid UserRegisterDto userRegisterDto) {
-		// TODO Auto-generated method stub
+		if (userAccountRepository.existsById(userRegisterDto.getLogin())) {
+			throw new UserExistsException();
+		}
 		return null;
 	}
 
