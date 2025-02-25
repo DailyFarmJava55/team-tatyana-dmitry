@@ -4,8 +4,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import telran.auth.account.model.User;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 	private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -29,8 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	                .build();
 	    }
 
-	    public PasswordEncoder getPasswordEncoder() {
-	        return passwordEncoder;
-	    }
+	    
 
 }

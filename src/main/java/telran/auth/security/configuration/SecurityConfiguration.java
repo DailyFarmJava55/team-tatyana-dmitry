@@ -12,20 +12,23 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
+import telran.auth.security.JwtAuthFilter;
 import telran.auth.security.UserDetailsServiceImpl;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-	@Bean
-	AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService) {
-		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService);
-		authProvider.setPasswordEncoder(userDetailsService.getPasswordEncoder());
-		return new ProviderManager(List.of(authProvider));
-	}
+	private final JwtAuthFilter jwtAuthFilter;
+	 @Bean
+	    AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService, PasswordEncoder passwordEncoder) {
+	        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+	        authProvider.setUserDetailsService(userDetailsService);
+	        authProvider.setPasswordEncoder(passwordEncoder); 
+	        return new ProviderManager(List.of(authProvider));
+	    }
 	 @Bean
 	     PasswordEncoder passwordEncoder() {
 	        return new BCryptPasswordEncoder();
@@ -42,10 +45,11 @@ public class SecurityConfiguration {
 
 				.requestMatchers("/api/auth/user/logout", "/api/auth/farmer/logout").authenticated()
 
-				.requestMatchers("/api/farmer/**").hasAuthority("FARMER")
+				.requestMatchers("/api/farmer/**").hasRole("FARMER")
 
 				.anyRequest().authenticated());
 
+		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 }

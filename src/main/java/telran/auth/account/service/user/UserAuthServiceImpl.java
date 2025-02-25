@@ -1,16 +1,19 @@
 package telran.auth.account.service.user;
 
-import org.springframework.security.authentication.BadCredentialsException;
+import java.util.List;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
-import telran.auth.account.dto.AuthRequestDto;
-import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.dto.exceptions.InvalidUserDataException;
 import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
+import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.Role;
 import telran.auth.account.model.User;
 import telran.auth.security.JwtService;
@@ -18,14 +21,15 @@ import telran.auth.security.RevokedTokenService;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserAuthServiceImpl implements UserAuthService {
 	private final UserRepository userRepository;
     private final JwtService jwtService;
     //private final ModelMapper modelMapper;
     private final RevokedTokenService revokedTokenService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void registerUser(UserDto userDto) {
+    public String registerUser(UserDto userDto) {
         if (userDto.getEmail() == null || userDto.getPassword() == null) {
             throw new InvalidUserDataException("Email and password cannot be null");
         }
@@ -34,7 +38,8 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException("User with this email already exists!");
         }
 
-        User newUser = new User(userDto.getEmail(), userDto.getPassword(), 
+        User newUser = new User(userDto.getEmail(), 
+                                passwordEncoder.encode(userDto.getPassword()),
                                 userDto.getLanguage() != null ? userDto.getLanguage() : "en",
                                 userDto.getLocation());
 
@@ -42,17 +47,19 @@ public class UserServiceImpl implements UserService {
         newUser.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
 
         userRepository.save(newUser);
+
+        
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                newUser.getEmail(), List.of(Role.USER));
+
+        return jwtService.generateToken(auth); 
     }
 
     @Override
-    public AuthResponse login(AuthRequestDto request) {
-        User user = findUserByEmail(request.getEmail());
-        validatePassword(request.getPassword(), user.getPassword());
-
-        String token = jwtService.generateToken(user.getEmail());
-
-        return new AuthResponse(user.getEmail(), user.getRoles(), token);
-    }
+    public String login(Authentication auth) {
+		return jwtService.generateToken(auth);
+	}
+    
 
     @Override
     public void logout(String token) {
@@ -67,10 +74,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    private void validatePassword(String rawPassword, String encodedPassword) {
-        if (!User.checkPassword(rawPassword, encodedPassword)) {
-            throw new BadCredentialsException("Invalid password");
-        }
+    @Override
+    public UserDto getUser(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
+
+        return new UserDto(user.getEmail(), "********", user.getLanguage(), user.getTimezone(), user.getLocation());
     }
+
 
 }
