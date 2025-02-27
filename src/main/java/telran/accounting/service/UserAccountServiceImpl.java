@@ -38,7 +38,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserAccount userAccount = modelMapper.map(userRegisterDto, UserAccount.class);
 		String password = passwordEncoder.encode(userRegisterDto.getPassword());
 		userAccount.setPassword(password);
-		userAccount.setPassword(userRegisterDto.getPassword());
+//		userAccount.setPassword(userRegisterDto.getPassword());
 		userAccount.addRole("USER");
 		userAccount.setRegistrationDate(LocalDateTime.now());
 		userAccount.setLastEditDate(LocalDateTime.now());
@@ -57,7 +57,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		UserAccount userAccount = modelMapper.map(farmerRegisterDto, UserAccount.class);
 			String password = passwordEncoder.encode(farmerRegisterDto.getPassword());
 			userAccount.setPassword(password);
-			userAccount.setPassword(farmerRegisterDto.getPassword());
+//			userAccount.setPassword(farmerRegisterDto.getPassword());
 			userAccount.addRole("FARMER");
 			userAccount.setRegistrationDate(LocalDateTime.now());
 			userAccount.setLastEditDate(LocalDateTime.now());
