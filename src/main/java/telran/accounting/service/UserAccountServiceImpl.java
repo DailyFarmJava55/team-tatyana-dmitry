@@ -3,6 +3,7 @@ package telran.accounting.service;
 import java.time.LocalDateTime;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 	
 	final UserAccountRepository userAccountRepository;
 	final ModelMapper modelMapper;
-	//final PasswordEncoder passwordEncoder;
+	final PasswordEncoder passwordEncoder;
 	
 	@Override
 	public UserDto registerUser(@Valid UserRegisterDto userRegisterDto) {
@@ -35,8 +36,8 @@ public class UserAccountServiceImpl implements UserAccountService {
 		}
 		
 		UserAccount userAccount = modelMapper.map(userRegisterDto, UserAccount.class);
-	//	String password = passwordEncoder.encode(userRegisterDto.getPassword());
-	//	userAccount.setPassword(password);
+		String password = passwordEncoder.encode(userRegisterDto.getPassword());
+		userAccount.setPassword(password);
 		userAccount.setPassword(userRegisterDto.getPassword());
 		userAccount.addRole("USER");
 		userAccount.setRegistrationDate(LocalDateTime.now());
@@ -54,8 +55,8 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throw new UserExistsException();
 		}
 		UserAccount userAccount = modelMapper.map(farmerRegisterDto, UserAccount.class);
-		//	String password = passwordEncoder.encode(userRegisterDto.getPassword());
-		//	userAccount.setPassword(password);
+			String password = passwordEncoder.encode(farmerRegisterDto.getPassword());
+			userAccount.setPassword(password);
 			userAccount.setPassword(farmerRegisterDto.getPassword());
 			userAccount.addRole("FARMER");
 			userAccount.setRegistrationDate(LocalDateTime.now());
