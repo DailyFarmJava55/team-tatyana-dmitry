@@ -19,22 +19,20 @@ import telran.accounting.exception.UserExistsException;
 import telran.accounting.model.Location;
 import telran.accounting.model.UserAccount;
 
-
-
 @Service
 @RequiredArgsConstructor
 public class UserAccountServiceImpl implements UserAccountService {
-	
+
 	final UserAccountRepository userAccountRepository;
 	final ModelMapper modelMapper;
 	final PasswordEncoder passwordEncoder;
-	
+
 	@Override
 	public UserDto registerUser(@Valid UserRegisterDto userRegisterDto) {
 		if (userAccountRepository.existsByEmail(userRegisterDto.getEmail())) {
 			throw new UserExistsException();
 		}
-		
+
 		UserAccount userAccount = modelMapper.map(userRegisterDto, UserAccount.class);
 		String password = passwordEncoder.encode(userRegisterDto.getPassword());
 		userAccount.setPassword(password);
@@ -45,8 +43,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 		userAccount.setLastAccessDate(LocalDateTime.now());
 		userAccountRepository.save(userAccount);
 		return modelMapper.map(userAccount, UserDto.class);
-		
-		
+
 	}
 
 	@Override
@@ -55,18 +52,19 @@ public class UserAccountServiceImpl implements UserAccountService {
 			throw new UserExistsException();
 		}
 		UserAccount userAccount = modelMapper.map(farmerRegisterDto, UserAccount.class);
-			String password = passwordEncoder.encode(farmerRegisterDto.getPassword());
-			userAccount.setPassword(password);
+		String password = passwordEncoder.encode(farmerRegisterDto.getPassword());
+		userAccount.setPassword(password);
 //			userAccount.setPassword(farmerRegisterDto.getPassword());
-			userAccount.addRole("FARMER");
-			userAccount.setRegistrationDate(LocalDateTime.now());
-			userAccount.setLastEditDate(LocalDateTime.now());
-			userAccount.setLastAccessDate(LocalDateTime.now());
-			Location location = new Location(farmerRegisterDto.getLocation().getLatitude(), farmerRegisterDto.getLocation().getLongitude());
-			userAccount.setLocation(location);
-			
-			userAccountRepository.save(userAccount);
-			return modelMapper.map(userAccount, FarmerDto.class);
+		userAccount.addRole("FARMER");
+		userAccount.setRegistrationDate(LocalDateTime.now());
+		userAccount.setLastEditDate(LocalDateTime.now());
+		userAccount.setLastAccessDate(LocalDateTime.now());
+		Location location = new Location(farmerRegisterDto.getLocation().getLatitude(),
+				farmerRegisterDto.getLocation().getLongitude());
+		userAccount.setLocation(location);
+
+		userAccountRepository.save(userAccount);
+		return modelMapper.map(userAccount, FarmerDto.class);
 	}
 
 	@Override
@@ -80,6 +78,5 @@ public class UserAccountServiceImpl implements UserAccountService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 }

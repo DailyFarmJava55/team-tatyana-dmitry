@@ -7,24 +7,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class ServiceConfiguration {
 	@Bean
 	ModelMapper getModelMapper() {
 		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration()
-									.setFieldMatchingEnabled(true)
-									.setFieldAccessLevel(AccessLevel.PRIVATE)
-									.setMatchingStrategy(MatchingStrategies.STRICT);
+		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE)
+				.setMatchingStrategy(MatchingStrategies.STRICT);
 
 		return modelMapper;
-		}
-		@Bean
-		PasswordEncoder getPasswordEncoder() {
-			return new BCryptPasswordEncoder();
-		
+	}
+
+	@Bean
+	PasswordEncoder getPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+
 	}
 }

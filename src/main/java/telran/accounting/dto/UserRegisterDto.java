@@ -1,7 +1,5 @@
 package telran.accounting.dto;
 
-import org.springframework.validation.annotation.Validated;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -11,5 +9,5 @@ public class UserRegisterDto {
 	String email;
 	@NotNull
 	String password;
-	
+
 }
