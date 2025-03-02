@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dto.AuthResponse;
+import telran.auth.account.dto.LoginRequest;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.model.Role;
 import telran.auth.account.model.User;
@@ -37,14 +39,17 @@ public class UserAuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthResponse> login(@RequestHeader String email, @RequestHeader String password) {
-	     Authentication authentication = authenticationManager.authenticate(
-	            new UsernamePasswordAuthenticationToken(email, password)
-	     );
-	     String token = jwtService.generateToken(authentication); 
-	     User user = userService.findUserByEmail(email);
-	     return ResponseEntity.ok(new AuthResponse(user.getEmail(), user.getRoles(), token));
-	}
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtService.generateToken(authentication);
+
+        User user = userService.findUserByEmail(loginRequest.getEmail());
+
+        return ResponseEntity.ok(new AuthResponse(user.getEmail(), user.getRoles(), token));
+    }
 
 	@GetMapping("/me")
 	public ResponseEntity<UserDto> getCurrentUser(Principal principal) {

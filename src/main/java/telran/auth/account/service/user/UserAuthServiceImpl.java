@@ -1,9 +1,9 @@
 package telran.auth.account.service.user;
 
-import java.util.List;
-
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,13 +50,22 @@ public class UserAuthServiceImpl implements UserAuthService {
 
         
         Authentication auth = new UsernamePasswordAuthenticationToken(
-                newUser.getEmail(), List.of(Role.USER));
-
+                newUser.getEmail(), 
+                newUser.getPassword(), 
+                newUser.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+                        .toList()
+        );
         return jwtService.generateToken(auth); 
     }
 
     @Override
     public String login(Authentication auth) {
+    	User user = findUserByEmail(auth.getName());
+
+    	if (!passwordEncoder.matches(auth.getCredentials().toString(), user.getPassword())) {
+    	    throw new BadCredentialsException("Invalid password");
+    	}
 		return jwtService.generateToken(auth);
 	}
     

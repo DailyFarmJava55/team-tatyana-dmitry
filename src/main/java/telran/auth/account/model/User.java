@@ -56,16 +56,13 @@ public class User {
 	    
 	    public User(String email, String password, String language, Location location) {
 	        this.email = email;
-	        this.password = hashPassword(password);
+	        this.password = password;
 	        this.language = language;
 	        this.location = location;
 	    }
 	    
 	    
 
-	    private String hashPassword(String password) {
-	        return BCrypt.hashpw(password, BCrypt.gensalt(10));
-	    }
 	    public static boolean checkPassword(String rawPassword, String hashedPassword) {
 	        return BCrypt.checkpw(rawPassword, hashedPassword);
 	    }

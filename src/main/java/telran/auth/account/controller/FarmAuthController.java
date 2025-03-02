@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
+import telran.auth.account.dto.LoginRequest;
 import telran.auth.account.model.Role;
 import telran.auth.account.model.User;
 import telran.auth.account.service.farm.FarmAuthService;
@@ -38,12 +40,13 @@ public class FarmAuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthResponse> login(@RequestHeader String email, @RequestHeader String password) {
-		Authentication authentication = authenticationManager.authenticate(
-	            new UsernamePasswordAuthenticationToken(email, password)
-	     );
+	  public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+        );
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 	     String token = jwtService.generateToken(authentication); 
-	     User farmer = farmAuthService.findFarmerByEmail(email);
+	     User farmer = farmAuthService.findFarmerByEmail(loginRequest.getEmail());
 	     return ResponseEntity.ok(new AuthResponse(farmer.getEmail(), farmer.getRoles(), token));
 	}
 
