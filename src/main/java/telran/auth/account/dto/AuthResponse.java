@@ -3,10 +3,10 @@ package telran.auth.account.dto;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import telran.auth.account.model.Role;
 
-@Data
+@Getter
 @AllArgsConstructor
 public class AuthResponse {
 	private String email;
