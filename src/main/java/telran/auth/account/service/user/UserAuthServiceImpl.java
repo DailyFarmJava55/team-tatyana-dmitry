@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
+import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.dto.exceptions.InvalidUserDataException;
 import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
@@ -29,7 +30,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String registerUser(UserDto userDto) {
+    public AuthResponse registerUser(UserDto userDto) {
         if (userDto.getEmail() == null || userDto.getPassword() == null) {
             throw new InvalidUserDataException("Email and password cannot be null");
         }
@@ -56,7 +57,8 @@ public class UserAuthServiceImpl implements UserAuthService {
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                         .toList()
         );
-        return jwtService.generateToken(auth); 
+        String token = jwtService.generateToken(auth);
+        return new AuthResponse(newUser.getId(), newUser.getEmail(), newUser.getRoles(), token);
     }
 
     @Override
