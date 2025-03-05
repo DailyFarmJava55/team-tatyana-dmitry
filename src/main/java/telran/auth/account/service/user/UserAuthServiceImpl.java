@@ -88,7 +88,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
 
-        return new UserDto(user.getEmail(), "********", user.getLanguage(), user.getTimezone(), user.getLocation());
+        return new UserDto(user.getId(), user.getEmail(), "********", user.getLanguage(), user.getTimezone(), user.getLocation());
     }
 
 

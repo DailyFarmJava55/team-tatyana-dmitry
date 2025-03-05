@@ -81,7 +81,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 			throw new UserNotFoundException("User is not a farmer: " + email);
 		}
 
-		return new FarmerDto(farmer.getEmail(), "********", farmer.getFarmName(), farmer.getLanguage(),
+		return new FarmerDto(farmer.getId(), farmer.getEmail(), "********", farmer.getFarmName(), farmer.getLanguage(),
 				farmer.getTimezone(), farmer.getLocation());
 	}
 
