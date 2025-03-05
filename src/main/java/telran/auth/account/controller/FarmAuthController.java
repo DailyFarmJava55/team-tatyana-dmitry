@@ -1,7 +1,6 @@
 package telran.auth.account.controller;
 
 import java.security.Principal;
-import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
 import telran.auth.account.dto.LoginRequest;
-import telran.auth.account.model.Role;
 import telran.auth.account.model.User;
 import telran.auth.account.service.farm.FarmAuthService;
 import telran.auth.security.JwtService;
@@ -36,8 +34,8 @@ public class FarmAuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<AuthResponse> registerFarmer(@Valid @RequestBody FarmerDto farmerDto) {
-		String token = farmAuthService.registerFarmer(farmerDto);
-		return ResponseEntity.ok(new AuthResponse(farmerDto.getId(), farmerDto.getEmail(), Set.of(Role.FARMER), token));
+		AuthResponse response = farmAuthService.registerFarmer(farmerDto);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/login")

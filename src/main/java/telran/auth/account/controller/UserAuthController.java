@@ -1,7 +1,6 @@
 package telran.auth.account.controller;
 
 import java.security.Principal;
-import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.LoginRequest;
 import telran.auth.account.dto.UserDto;
-import telran.auth.account.model.Role;
 import telran.auth.account.model.User;
 import telran.auth.account.service.user.UserAuthService;
 import telran.auth.security.JwtService;
@@ -35,8 +33,8 @@ public class UserAuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserDto userDto) {
-		String token = userService.registerUser(userDto);
-		return ResponseEntity.ok(new AuthResponse(userDto.getId(), userDto.getEmail(), Set.of(Role.USER), token));
+		AuthResponse response = userService.registerUser(userDto);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/login")

@@ -39,6 +39,9 @@ public class SecurityConfiguration {
 		http.httpBasic(Customizer.withDefaults());
 		http.csrf(csrf -> csrf.disable());
 		http.authorizeHttpRequests(authorize -> authorize
+				
+				// Swagger UI
+	            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
 				.requestMatchers("/api/auth/user/register", "/api/auth/user/login").permitAll()
 				.requestMatchers("/api/auth/farmer/register", "/api/auth/farmer/login").permitAll()

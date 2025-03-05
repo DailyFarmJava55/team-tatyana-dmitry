@@ -2,12 +2,14 @@ package telran.auth.account.service.farm;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
+import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
 import telran.auth.account.dto.exceptions.InvalidUserDataException;
 import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
@@ -26,7 +28,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public String registerFarmer(FarmerDto farmerDto) {
+	public AuthResponse registerFarmer(FarmerDto farmerDto) {
 		if (farmerDto.getEmail() == null || farmerDto.getPassword() == null) {
 			throw new InvalidUserDataException("Email and password cannot be null");
 		}
@@ -48,11 +50,17 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		}
 
 		user.setTimezone(farmerDto.getTimezone() != null ? farmerDto.getTimezone() : "Europe/Berlin");
-		userRepository.save(user);
+		User newFarmer = userRepository.save(user);
 
-		Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getRoles());
-
-		return jwtService.generateToken(auth);
+		 Authentication auth = new UsernamePasswordAuthenticationToken(
+	                newFarmer.getEmail(),
+	                newFarmer.getPassword(),
+	                newFarmer.getRoles().stream()
+	                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+	                        .toList()
+	        );
+		 String token = jwtService.generateToken(auth);
+		return  new AuthResponse(newFarmer.getId(), newFarmer.getEmail(), newFarmer.getRoles(), token);
 	}
 
 	public String login(Authentication auth) {
