@@ -12,6 +12,6 @@ import telran.auth.account.model.Role;
 public class AuthResponse {
 	private UUID id;
 	private String email;
-	private Set<Role>roles;
+	private Set<Role> roles;
 	private String token;
 }

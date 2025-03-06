@@ -33,8 +33,10 @@ public class UserAuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserDto userDto) {
-		AuthResponse response = userService.registerUser(userDto);
-		return ResponseEntity.ok(response);
+
+		String token = userService.registerUser(userDto);
+		return ResponseEntity.ok(new AuthResponse(null, userDto.getEmail(), Set.of(Role.USER), token));
+
 	}
 
 	@PostMapping("/login")
@@ -46,7 +48,8 @@ public class UserAuthController {
 
 		User user = userService.findUserByEmail(loginRequest.getEmail());
 
-		return ResponseEntity.ok(new AuthResponse(user.getId(), user.getEmail(), user.getRoles(), token));
+		return ResponseEntity.ok(new AuthResponse(null, user.getEmail(), user.getRoles(), token));
+
 	}
 
 	@GetMapping("/me")
