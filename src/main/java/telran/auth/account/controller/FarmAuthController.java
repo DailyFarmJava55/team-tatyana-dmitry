@@ -37,7 +37,7 @@ public class FarmAuthController {
 	@PostMapping("/register")
 	public ResponseEntity<AuthResponse> registerFarmer(@Valid @RequestBody FarmerDto farmerDto) {
 		String token = farmAuthService.registerFarmer(farmerDto);
-		return ResponseEntity.ok(new AuthResponse(farmerDto.getEmail(), Set.of(Role.FARMER), token));
+		return ResponseEntity.ok(new AuthResponse(null, farmerDto.getEmail(), Set.of(Role.FARMER), token));
 	}
 
 	@PostMapping("/login")
@@ -47,7 +47,7 @@ public class FarmAuthController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtService.generateToken(authentication);
 		User farmer = farmAuthService.findFarmerByEmail(loginRequest.getEmail());
-		return ResponseEntity.ok(new AuthResponse(farmer.getEmail(), farmer.getRoles(), token));
+		return ResponseEntity.ok(new AuthResponse(null, farmer.getEmail(), farmer.getRoles(), token));
 	}
 
 	@GetMapping("/me")
