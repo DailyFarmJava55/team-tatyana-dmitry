@@ -1,5 +1,7 @@
 package telran.auth.account.service.farm;
 
+import java.util.UUID;
+
 import org.springframework.security.core.Authentication;
 
 import telran.auth.account.dto.AuthResponse;
@@ -17,4 +19,6 @@ public interface FarmAuthService {
 	User findFarmerByEmail(String name);
 
 	FarmerDto getFarmer(String name);
+	
+	void updateLastLogin(UUID id);
 }

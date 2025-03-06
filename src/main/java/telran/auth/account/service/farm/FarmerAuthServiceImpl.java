@@ -1,5 +1,8 @@
 package telran.auth.account.service.farm;
 
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -91,6 +94,18 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 
 		return new FarmerDto(farmer.getId(), farmer.getEmail(), "********", farmer.getFarmName(), farmer.getLanguage(),
 				farmer.getTimezone(), farmer.getLocation());
+	}
+
+	@Override
+	public void updateLastLogin(UUID id) {
+		User farmer = getFarmerById(id);
+		farmer.setLastLoginAt(ZonedDateTime.now());
+		userRepository.save(farmer);
+		
+	}
+
+	private User getFarmerById(UUID id) {
+		return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Farmer not found"));
 	}
 
 }

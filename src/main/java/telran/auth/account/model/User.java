@@ -1,9 +1,11 @@
 package telran.auth.account.model;
 
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import jakarta.persistence.CollectionTable;
@@ -40,7 +42,6 @@ public class User {
 	    @Column(nullable = false)
 	    private String password;
 
-	    @Column(nullable = false)
 	    private String language;
 
 	    private String timezone;
@@ -55,6 +56,9 @@ public class User {
 	    
 	    private String farmName;
 	    
+	    @CreationTimestamp
+	    private ZonedDateTime registeredAt;
+	    private ZonedDateTime lastLoginAt;
 	    
 	    public User(String email, String password, String language, Location location) {
 	        this.email = email;
