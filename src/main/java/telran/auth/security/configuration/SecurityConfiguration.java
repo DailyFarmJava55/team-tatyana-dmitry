@@ -39,22 +39,16 @@ public class SecurityConfiguration {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-		.formLogin(f->f.disable())
-		.httpBasic(Customizer.withDefaults())
-		.headers(headers->headers.frameOptions(opt->opt.disable()))
-		.csrf(csrf -> csrf.disable());
-		http.authorizeHttpRequests(authorize -> authorize  
 
+		http.httpBasic(Customizer.withDefaults());
+		http.csrf(csrf -> csrf.disable());
+		http.authorizeHttpRequests(authorize -> authorize
+	      .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 				.requestMatchers("/api/auth/user/register", "/api/auth/user/login").permitAll()
 				.requestMatchers("/api/auth/farmer/register", "/api/auth/farmer/login").permitAll()
-
 				.requestMatchers("/api/auth/user/logout", "/api/auth/farmer/logout").authenticated()
-
 				.requestMatchers("/api/farmer/**").hasRole("FARMER")
-				//.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-				.anyRequest().permitAll());
-				//authenticated());
+				.anyRequest().authenticated());
 
 		http.addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class);
 		return http.build();

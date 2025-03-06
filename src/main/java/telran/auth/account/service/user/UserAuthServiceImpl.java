@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
+import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.dto.exceptions.InvalidUserDataException;
 import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
@@ -32,6 +33,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     @Override
     @Transactional
     public String registerUser(UserDto userDto) {
+
         if (userDto.getEmail() == null || userDto.getPassword() == null) {
             throw new InvalidUserDataException("Email and password cannot be null");
         }
@@ -58,7 +60,8 @@ public class UserAuthServiceImpl implements UserAuthService {
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                         .toList()
         );
-        return jwtService.generateToken(auth); 
+        String token = jwtService.generateToken(auth);
+        return new AuthResponse(newUser.getId(), newUser.getEmail(), newUser.getRoles(), token);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
 
-        return new UserDto(user.getEmail(), "********", user.getLanguage(), user.getTimezone(), user.getLocation());
+        return new UserDto(user.getId(), user.getEmail(), "********", user.getLanguage(), user.getTimezone(), user.getLocation());
     }
 
 

@@ -2,12 +2,13 @@ package telran.auth.account.service.farm;
 
 import org.springframework.security.core.Authentication;
 
+import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
 import telran.auth.account.model.User;
 
 public interface FarmAuthService {
 
-	String registerFarmer(FarmerDto farmerDto);
+	AuthResponse registerFarmer(FarmerDto farmerDto);
 	
 	String login(Authentication auth);
 
