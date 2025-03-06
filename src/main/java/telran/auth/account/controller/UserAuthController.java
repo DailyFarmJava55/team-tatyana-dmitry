@@ -1,6 +1,9 @@
 package telran.auth.account.controller;
 
 import java.security.Principal;
+import java.util.Set;
+
+import javax.management.relation.Role;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,9 +37,8 @@ public class UserAuthController {
 	@PostMapping("/register")
 	public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserDto userDto) {
 
-		String token = userService.registerUser(userDto);
-		return ResponseEntity.ok(new AuthResponse(null, userDto.getEmail(), Set.of(Role.USER), token));
-
+		AuthResponse response = userService.registerUser(userDto);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/login")
@@ -48,8 +50,7 @@ public class UserAuthController {
 
 		User user = userService.findUserByEmail(loginRequest.getEmail());
 
-		return ResponseEntity.ok(new AuthResponse(null, user.getEmail(), user.getRoles(), token));
-
+		return ResponseEntity.ok(new AuthResponse(user.getId(), user.getEmail(), user.getRoles(), token));
 	}
 
 	@GetMapping("/me")

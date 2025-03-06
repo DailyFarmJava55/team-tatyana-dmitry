@@ -32,7 +32,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 
     @Override
     @Transactional
-    public String registerUser(UserDto userDto) {
+    public AuthResponse registerUser(UserDto userDto) {
 
         if (userDto.getEmail() == null || userDto.getPassword() == null) {
             throw new InvalidUserDataException("Email and password cannot be null");
