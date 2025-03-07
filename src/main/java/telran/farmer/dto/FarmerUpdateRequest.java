@@ -1,4 +1,4 @@
-package telran.user.dto;
+package telran.farmer.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,21 +9,23 @@ import telran.auth.account.model.Location;
 
 @Data
 @AllArgsConstructor
-public class UserUpdateRequest {
-	
+public class FarmerUpdateRequest {
 	@Email(message = "Invalid email format")
-    @NotBlank(message = "Email is required")
-    private String email;
-	
+	@NotBlank(message = "Email is required")
+	private String email;
+
 	@NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
-    private String password;
+	@Size(min = 6, message = "Password must be at least 6 characters long")
+	private String password;
+
+	@NotBlank(message = "Farm name is required")
+	private String farmName;
 	
 	@NotBlank(message = "Language is required")
-    private String language;
-	
+	private String language;
+
 	@NotBlank(message = "Timezone is required")
-    private String timezone;
-	
-    private Location location;
+	private String timezone;
+
+	private Location location;
 }

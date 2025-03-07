@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
+import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.User;
 import telran.user.dto.UserUpdateRequest;
 @Service
@@ -17,13 +18,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<User> getAllUsers() {
-		return userRepository.findAll();
+		return userRepository.findAllUsers();
 	}
 
 	@Override
 	public User getUserById(UUID id) {
 		return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new UserNotFoundException("User not found"));
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserByEmail(String email) {
 		return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+				  .orElseThrow(() -> new UserNotFoundException("User not found"));
 	}
 
 }
