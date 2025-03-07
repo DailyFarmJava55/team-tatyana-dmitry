@@ -1,5 +1,8 @@
 package telran.auth.account.service.user;
 
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,44 +28,37 @@ import telran.auth.security.RevokedTokenService;
 @RequiredArgsConstructor
 public class UserAuthServiceImpl implements UserAuthService {
 	private final UserRepository userRepository;
-    private final JwtService jwtService;
-    //private final ModelMapper modelMapper;
-    private final RevokedTokenService revokedTokenService;
-    private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
+	private final RevokedTokenService revokedTokenService;
+	private final PasswordEncoder passwordEncoder;
 
-    @Override
-    @Transactional
-    public AuthResponse registerUser(UserDto userDto) {
+  @Transactional
+	@Override
+	public AuthResponse registerUser(UserDto userDto) {
+		if (userDto.getEmail() == null || userDto.getPassword() == null) {
+			throw new InvalidUserDataException("Email and password cannot be null");
+		}
 
-        if (userDto.getEmail() == null || userDto.getPassword() == null) {
-            throw new InvalidUserDataException("Email and password cannot be null");
-        }
+		if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+			throw new UserAlreadyExistsException("User with this email already exists!");
+		}
 
-        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("User with this email already exists!");
-        }
+		User newUser = new User(userDto.getEmail(), passwordEncoder.encode(userDto.getPassword()),
+				userDto.getLanguage() != null ? userDto.getLanguage() : "en", userDto.getLocation());
 
-        User newUser = new User(userDto.getEmail(), 
-                                passwordEncoder.encode(userDto.getPassword()),
-                                userDto.getLanguage() != null ? userDto.getLanguage() : "en",
-                                userDto.getLocation());
+		newUser.getRoles().add(Role.USER);
+		newUser.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
 
-        newUser.getRoles().add(Role.USER);
-        newUser.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
+		userRepository.save(newUser);
 
-        userRepository.save(newUser);
+		Authentication auth = new UsernamePasswordAuthenticationToken(newUser.getEmail(), newUser.getPassword(),
+				newUser.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());
+		String token = jwtService.generateToken(auth);
+		return new AuthResponse(newUser.getId(), newUser.getEmail(), newUser.getRoles(), token);
+	}
 
-        
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                newUser.getEmail(), 
-                newUser.getPassword(), 
-                newUser.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-                        .toList()
-        );
-        String token = jwtService.generateToken(auth);
-        return new AuthResponse(newUser.getId(), newUser.getEmail(), newUser.getRoles(), token);
-    }
+
+   
 
     @Override
     public String login(Authentication auth) {
@@ -71,30 +67,41 @@ public class UserAuthServiceImpl implements UserAuthService {
     	if (!passwordEncoder.matches(auth.getCredentials().toString(), user.getPassword())) {
     	    throw new BadCredentialsException("Invalid password");
     	}
+
 		return jwtService.generateToken(auth);
 	}
-    
 
-    @Override
-    public void logout(String token) {
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-            revokedTokenService.revokeToken(token);
-        }
-    }
+	@Override
+	public void updateLastLogin(UUID id) {
+		User user = getUserById(id);
+		user.setLastLoginAt(ZonedDateTime.now());
+		userRepository.save(user);
 
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
+	}
 
-    @Override
-    public UserDto getUser(String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException("User not found: " + email));
+	@Override
+	public void logout(String token) {
+		if (token != null && token.startsWith("Bearer ")) {
+			token = token.substring(7);
+			revokedTokenService.revokeToken(token);
+		}
+	}
 
-        return new UserDto(user.getId(), user.getEmail(), "********", user.getLanguage(), user.getTimezone(), user.getLocation());
-    }
+	public User findUserByEmail(String email) {
+		return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+	}
 
+	@Override
+	public UserDto getUser(String email) {
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new UserNotFoundException("User not found: " + email));
+
+		return new UserDto(user.getId(), user.getEmail(), "********", user.getLanguage(), user.getTimezone(),
+				user.getLocation());
+	}
+
+	private User getUserById(UUID id) {
+		return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+	}
 
 }
