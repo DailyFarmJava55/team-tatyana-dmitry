@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import telran.auth.account.model.User;
+import telran.auth.account.model.Farmer;
 import telran.farmer.dto.FarmerUpdateRequest;
 import telran.farmer.service.FarmerService;
 
@@ -27,23 +27,23 @@ public class FarmerController {
 	private final FarmerService farmerService;
 
 	@GetMapping
-	public ResponseEntity<List<User>> getAllFarmers() {
+	public ResponseEntity<List<Farmer>> getAllFarmers() {
 		return ResponseEntity.ok(farmerService.getAllFarmers());
 	}
 	
 	@GetMapping("/{farmName}")
-	public ResponseEntity<User> getFarmerByFarmName(@PathVariable String farmName) {
+	public ResponseEntity<Farmer> getFarmerByFarmName(@PathVariable String farmName) {
         return ResponseEntity.ok(farmerService.getFarmerByFarmName(farmName));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getFarmerById(@PathVariable UUID id) {
+	public ResponseEntity<Farmer> getFarmerById(@PathVariable UUID id) {
 		return ResponseEntity.ok(farmerService.getFarmerById(id));
 	}
 
 	@PutMapping("/{id}")
 	@PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
-	public ResponseEntity<User> updateFarmer(@PathVariable UUID id, @RequestBody FarmerUpdateRequest request) {
+	public ResponseEntity<Farmer> updateFarmer(@PathVariable UUID id, @RequestBody FarmerUpdateRequest request) {
 		return ResponseEntity.ok(farmerService.updateFarmer(id, request));
 	}
 
@@ -55,7 +55,7 @@ public class FarmerController {
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<User> getCurrentFarmer(Principal principal) {
+	public ResponseEntity<Farmer> getCurrentFarmer(Principal principal) {
 		return ResponseEntity.ok(farmerService.getFarmerByEmail(principal.getName()));
     }
 }

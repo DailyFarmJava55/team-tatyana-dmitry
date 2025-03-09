@@ -4,7 +4,6 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -17,12 +16,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
+@Table(name = "farmers")
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
-@Table(name = "users")
-public class User {
+
+public class Farmer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
@@ -33,26 +33,24 @@ public class User {
 	@Column(nullable = false)
 	private String password;
 
+	@Column(nullable = false)
+	private String farmName;
 	private String language;
 
 	private String timezone;
 
 	@Embedded
-	private Location location;
-
-
+	private Location Location;
 	@CreationTimestamp
 	private ZonedDateTime registeredAt;
 	private ZonedDateTime lastLoginAt;
-
-	public User(String email, String password, String language, Location location) {
+	
+	public Farmer(String email, String password, String farmName, String language, String timezone, Location location) {
 		this.email = email;
 		this.password = password;
+		this.farmName = farmName;
 		this.language = language;
-		this.location = location;
-	}
-
-	public static boolean checkPassword(String rawPassword, String hashedPassword) {
-		return BCrypt.checkpw(rawPassword, hashedPassword);
+		this.Location = location;
+		this.timezone = timezone;
 	}
 }

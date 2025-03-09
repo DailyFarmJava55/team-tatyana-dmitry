@@ -3,21 +3,21 @@ package telran.farmer.service;
 import java.util.List;
 import java.util.UUID;
 
-import telran.auth.account.model.User;
+import telran.auth.account.model.Farmer;
 import telran.farmer.dto.FarmerUpdateRequest;
 
 public interface FarmerService {
 
-	List<User> getAllFarmers();
+	List<Farmer> getAllFarmers();
 
-	User getFarmerById(UUID id);
+	Farmer getFarmerById(UUID id);
 
-	User updateFarmer(UUID id, FarmerUpdateRequest request);
+	Farmer updateFarmer(UUID id, FarmerUpdateRequest request);
 
 	void deleteFarmer(UUID id);
 
-	User getFarmerByEmail(String email);
+	Farmer getFarmerByEmail(String email);
 
-	User getFarmerByFarmName(String farmName);
+	Farmer getFarmerByFarmName(String farmName);
 
 }
