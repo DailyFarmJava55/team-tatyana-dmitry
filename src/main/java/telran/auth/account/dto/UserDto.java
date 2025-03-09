@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import telran.auth.account.model.Location;
+import telran.auth.account.validation.ValidPassword;
 
 @Data
 @AllArgsConstructor
@@ -17,8 +18,7 @@ public class UserDto {
     @NotBlank(message = "Email is required")
     private String email;
 	
-	@NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+	@ValidPassword
     private String password;
 	
 	@NotBlank(message = "Language is required")

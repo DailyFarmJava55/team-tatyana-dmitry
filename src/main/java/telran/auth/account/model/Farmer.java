@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import telran.auth.account.validation.ValidPassword;
 
 @Entity
 @Table(name = "farmers")
