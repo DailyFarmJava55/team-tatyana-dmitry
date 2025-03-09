@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
@@ -27,6 +28,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 	private final RevokedTokenService revokedTokenService;
 	private final PasswordEncoder passwordEncoder;
 
+	@Transactional
 	@Override
 	public AuthResponse registerUser(UserDto userDto) {
 		if (userDto.getEmail() == null || userDto.getPassword() == null) {
@@ -38,7 +40,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 		}
 
 		User user = new User(userDto.getEmail(), passwordEncoder.encode(userDto.getPassword()),
-				 userDto.getLanguage() != null ? userDto.getLanguage() : "en",userDto.getLocation());
+				userDto.getLanguage() != null ? userDto.getLanguage() : "en", userDto.getLocation());
 		user.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
 		user.setRegisteredAt(ZonedDateTime.now());
 		User newUser = userRepository.save(user);
@@ -46,7 +48,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 		String accessToken = jwtService.generateAccessToken(newUser.getEmail(), "USER");
 		String refreshToken = jwtService.generateRefreshToken(newUser.getEmail());
 
-		return new AuthResponse(newUser.getId(),newUser.getEmail(), accessToken, refreshToken);
+		return new AuthResponse(newUser.getId(), newUser.getEmail(), accessToken, refreshToken);
 	}
 
 	@Override
@@ -61,13 +63,13 @@ public class UserAuthServiceImpl implements UserAuthService {
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
 		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-		return new AuthResponse(user.getId(),user.getEmail(), accessToken, refreshToken);
+		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
+
 	}
 
 	@Override
 	public void updateLastLogin(UUID id) {
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("User not found: " + id));
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found: " + id));
 		user.setLastLoginAt(ZonedDateTime.now());
 		userRepository.save(user);
 
@@ -97,14 +99,14 @@ public class UserAuthServiceImpl implements UserAuthService {
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {
 		if (!jwtService.validateToken(refreshToken)) {
-	        throw new RuntimeException("Invalid or expired refresh token");
-	    }
+			throw new RuntimeException("Invalid or expired refresh token");
+		}
 
-	    String email = jwtService.extractEmail(refreshToken);
-	    String role = jwtService.extractRole(refreshToken); 
-	    String newAccessToken = jwtService.generateAccessToken(email, role);
+		String email = jwtService.extractEmail(refreshToken);
+		String role = jwtService.extractRole(refreshToken);
+		String newAccessToken = jwtService.generateAccessToken(email, role);
 
-	    return new AuthResponse(null,null, newAccessToken, refreshToken);
+		return new AuthResponse(null, null, newAccessToken, refreshToken);
 	}
 
 }
