@@ -6,48 +6,50 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import telran.auth.account.dao.UserRepository;
+import telran.auth.account.dao.FarmerRepository;
 import telran.auth.account.dto.exceptions.UserNotFoundException;
-import telran.auth.account.model.User;
+import telran.auth.account.model.Farmer;
 import telran.farmer.dto.FarmerUpdateRequest;
 @Service
 @RequiredArgsConstructor
 public class FarmerServiceImpl implements FarmerService {
-	private final UserRepository userRepository;
+	private final FarmerRepository farmerRepository;
 	@Override
-	public List<User> getAllFarmers() {
-		return userRepository.findAllFarmers();
+	public List<Farmer> getAllFarmers() {
+		return farmerRepository.findAll();
 	}
 
 	@Override
-	public User getFarmerById(UUID id) {
-		return userRepository.findById(id)
+	public Farmer getFarmerById(UUID id) {
+		return farmerRepository.findById(id)
 				  .orElseThrow(() -> new UserNotFoundException("Farmer not found"));
 	}
 
 	@Override
-	public User updateFarmer(UUID id, FarmerUpdateRequest request) {
-		 User farmer = getFarmerById(id);
+	public Farmer updateFarmer(UUID id, FarmerUpdateRequest request) {
+		 Farmer farmer = getFarmerById(id);
 	        if (request.getEmail() != null) farmer.setEmail(request.getEmail());
-	        return userRepository.save(farmer);
+	        return farmerRepository.save(farmer);
 	}
 
 	@Override
 	public void deleteFarmer(UUID id) {
-		userRepository.deleteById(id);
+		farmerRepository.deleteById(id);
 
 	}
 
 	@Override
-	public User getFarmerByEmail(String email) {
-		return userRepository.findByEmail(email)
+	public Farmer getFarmerByEmail(String email) {
+		return farmerRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Farmer not found"));
 	}
 
 	@Override
-	public User getFarmerByFarmName(String farmName) {
-		return userRepository.findByFarmName(farmName)
+	public Farmer getFarmerByFarmName(String farmName) {
+		return farmerRepository.findByFarmName(farmName)
 				  .orElseThrow(() -> new UserNotFoundException("Farmer not found"));
 	}
+
+	
 
 }

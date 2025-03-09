@@ -3,10 +3,6 @@ package telran.auth.account.service.user;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
+import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.dto.exceptions.InvalidUserDataException;
 import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
 import telran.auth.account.dto.exceptions.UserNotFoundException;
-import telran.auth.account.model.Role;
 import telran.auth.account.model.User;
 import telran.auth.security.JwtService;
 import telran.auth.security.RevokedTokenService;
@@ -32,7 +28,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 	private final RevokedTokenService revokedTokenService;
 	private final PasswordEncoder passwordEncoder;
 
-  @Transactional
+	@Transactional
 	@Override
 	public AuthResponse registerUser(UserDto userDto) {
 		if (userDto.getEmail() == null || userDto.getPassword() == null) {
@@ -43,37 +39,37 @@ public class UserAuthServiceImpl implements UserAuthService {
 			throw new UserAlreadyExistsException("User with this email already exists!");
 		}
 
-		User newUser = new User(userDto.getEmail(), passwordEncoder.encode(userDto.getPassword()),
+		User user = new User(userDto.getEmail(), passwordEncoder.encode(userDto.getPassword()),
 				userDto.getLanguage() != null ? userDto.getLanguage() : "en", userDto.getLocation());
+		user.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
+		user.setRegisteredAt(ZonedDateTime.now());
+		User newUser = userRepository.save(user);
 
-		newUser.getRoles().add(Role.USER);
-		newUser.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
+		String accessToken = jwtService.generateAccessToken(newUser.getEmail(), "USER");
+		String refreshToken = jwtService.generateRefreshToken(newUser.getEmail());
 
-		userRepository.save(newUser);
-
-		Authentication auth = new UsernamePasswordAuthenticationToken(newUser.getEmail(), newUser.getPassword(),
-				newUser.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())).toList());
-		String token = jwtService.generateToken(auth);
-		return new AuthResponse(newUser.getId(), newUser.getEmail(), newUser.getRoles(), token);
+		return new AuthResponse(newUser.getId(), newUser.getEmail(), accessToken, refreshToken);
 	}
 
+	@Override
+	public AuthResponse authenticateUser(AuthRequestDto request) {
+		User user = userRepository.findByEmail(request.getEmail())
+				.orElseThrow(() -> new InvalidUserDataException("Invalid email or password"));
 
-   
+		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new InvalidUserDataException("Invalid email or password");
+		}
 
-    @Override
-    public String login(Authentication auth) {
-    	User user = findUserByEmail(auth.getName());
+		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
+		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-    	if (!passwordEncoder.matches(auth.getCredentials().toString(), user.getPassword())) {
-    	    throw new BadCredentialsException("Invalid password");
-    	}
+		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 
-		return jwtService.generateToken(auth);
 	}
 
 	@Override
 	public void updateLastLogin(UUID id) {
-		User user = getUserById(id);
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found: " + id));
 		user.setLastLoginAt(ZonedDateTime.now());
 		userRepository.save(user);
 
@@ -100,8 +96,17 @@ public class UserAuthServiceImpl implements UserAuthService {
 				user.getLocation());
 	}
 
-	private User getUserById(UUID id) {
-		return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+	@Override
+	public AuthResponse refreshAccessToken(String refreshToken) {
+		if (!jwtService.validateToken(refreshToken)) {
+			throw new RuntimeException("Invalid or expired refresh token");
+		}
+
+		String email = jwtService.extractEmail(refreshToken);
+		String role = jwtService.extractRole(refreshToken);
+		String newAccessToken = jwtService.generateAccessToken(email, role);
+
+		return new AuthResponse(null, null, newAccessToken, refreshToken);
 	}
 
 }

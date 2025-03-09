@@ -1,15 +1,12 @@
 package telran.auth.security;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -20,33 +17,59 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-	@Value("${jwt.expirationTimeSec:60}")
-	 private int expirationTimeSec;
+	@Value("${jwt.accessExpirationSec:900}") // 15 minutes
+    private int accessExpirationSec;
 
-	 private SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-	 SecretKey secretKey = Keys.secretKeyFor(signatureAlgorithm);
+    @Value("${jwt.refreshExpirationSec:604800}") // 7 days
+    private int refreshExpirationSec;
 
-    public String generateToken(Authentication authentication) {
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+    private final SecretKey secretKey = Keys.secretKeyFor(signatureAlgorithm);
+
+    public String generateAccessToken(String email, String role) {
         return Jwts.builder()
-        		.setClaims(new HashMap<>())
-                .setSubject(authentication.getName())
+                .setSubject(email) 
+                .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTimeSec * 1000))
-                .claim("roles", AuthorityUtils.authorityListToSet(authentication.getAuthorities()))
-                .signWith(secretKey,signatureAlgorithm) 
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpirationSec * 1000)) 
+                .signWith(secretKey, signatureAlgorithm) 
                 .compact();
     }
 
-	public Authentication parseToken(String token) throws JwtException {
-		Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-		String email = claims.getSubject();
-		List<?>roleList = claims.get("roles", List.class);
-		if (email == null || roleList == null) {
-			throw new JwtException("Insufficient claims are specified");
-		}
-		return new UsernamePasswordAuthenticationToken(
-				email,
-				null,
-				AuthorityUtils.createAuthorityList(roleList.toArray(new String[0])));
-	}
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationSec * 1000)) 
+                .signWith(secretKey, signatureAlgorithm)
+                .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
+    }
+
+    public String extractEmail(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build()
+                .parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String extractRole(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build()
+                .parseClaimsJws(token).getBody().get("role", String.class);
+    }
+
+    public Authentication parseToken(String token) throws JwtException {
+        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+        String email = claims.getSubject();
+        if (email == null) {
+            throw new JwtException("Invalid token: email not found");
+        }
+        return new UsernamePasswordAuthenticationToken(email, null, null);
+    }
 }

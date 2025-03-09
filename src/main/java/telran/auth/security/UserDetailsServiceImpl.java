@@ -1,33 +1,39 @@
 package telran.auth.security;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import telran.auth.account.dao.UserRepository;
-import telran.auth.account.model.User;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-	private final UserRepository userRepository;
+	 @PersistenceContext
+	    private final EntityManager entityManager;
 
-	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		 User user = userRepository.findByEmail(email)
-	                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+	 @Override
+	    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+	        try {
+	            Object[] result = (Object[]) entityManager.createQuery(
+	                    "SELECT u.email, u.password FROM User u WHERE u.email = :email " +
+	                    "UNION " +
+	                    "SELECT f.email, f.password FROM Farmer f WHERE f.email = :email")
+	                    .setParameter("email", email)
+	                    .getSingleResult();
 
-		 return org.springframework.security.core.userdetails.User.builder()
-				    .username(user.getEmail())
-				    .password(user.getPassword())
-				    .authorities(user.getRoles().stream()
-				        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())) 
-				        .toList()) 
-				    .build();
+	            String foundEmail = (String) result[0];
+	            String password = (String) result[1];
+
+	            return org.springframework.security.core.userdetails.User.builder()
+	                    .username(foundEmail)
+	                    .password(password)
+	                    .build();
+	        } catch (NoResultException e) {
+	            throw new UsernameNotFoundException("User not found: " + email);
+	        }
 	    }
-
-	    
-
-}
+	}
