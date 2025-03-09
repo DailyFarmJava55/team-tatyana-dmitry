@@ -24,9 +24,14 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
-    	 Map<String, String> errors = new LinkedHashMap<>();
-         ex.getBindingResult().getFieldErrors().forEach(error ->
-             errors.put(error.getField(), error.getDefaultMessage()));
+    	Map<String, String> errors = new LinkedHashMap<>();
+    	ex.getBindingResult().getFieldErrors().forEach(error ->
+    	    errors.merge(
+    	        error.getField(),
+    	        error.getDefaultMessage(),
+    	        (existingMessage, newMessage) -> existingMessage + "; " + newMessage
+    	    )
+    	);
         return buildErrorResponse(errors, HttpStatus.BAD_REQUEST);
     }
     

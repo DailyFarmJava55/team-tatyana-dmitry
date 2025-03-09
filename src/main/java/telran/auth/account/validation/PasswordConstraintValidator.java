@@ -1,6 +1,9 @@
 
 package telran.auth.account.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -12,13 +15,33 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
-        if (password == null) {
-            return false;
-        }
-        // Password must be at least 8 characters long, contain at least one digit, one uppercase letter, and one special character
-        return password.length() >= 8 &&
-               password.matches(".*\\d.*") &&
-               password.matches(".*[A-Z].*") &&
-               password.matches(".*[!@#$%^&*(),.?\":{}|<>].*");
+    	 List<String> errorMessages = new ArrayList<>();
+
+         if (password == null) {
+             errorMessages.add("Password cannot be null");
+         } else {
+             if (password.length() < 8) {
+                 errorMessages.add("Password must be at least 8 characters long");
+             }
+             if (!password.matches(".*\\d.*")) {
+                 errorMessages.add("Password must contain at least one digit");
+             }
+             if (!password.matches(".*[A-Z].*")) {
+                 errorMessages.add("Password must contain at least one uppercase letter");
+             }
+             if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+                 errorMessages.add("Password must contain at least one special character");
+             }
+         }
+
+         if (!errorMessages.isEmpty()) {
+             context.disableDefaultConstraintViolation();
+             for (String errorMessage : errorMessages) {
+                 context.buildConstraintViolationWithTemplate(errorMessage).addConstraintViolation();
+             }
+             return false;
+         }
+
+         return true;
     }
 }
