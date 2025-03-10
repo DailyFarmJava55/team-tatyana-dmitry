@@ -39,10 +39,11 @@ public class FarmAuthController {
     }
 	
 	@PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        AuthResponse response = farmAuthService.refreshAccessToken(refreshTokenRequest.getRefreshToken());
-        return ResponseEntity.ok(response);
-    }
+	public ResponseEntity<AuthResponse> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
+	    refreshToken = refreshToken.substring(7);
+	    AuthResponse response = farmAuthService.refreshAccessToken(refreshToken);
+	    return ResponseEntity.ok(response);
+	}
 
 	@GetMapping("/me")
 	public ResponseEntity<FarmerDto> getCurrentFarmer(Principal principal) {

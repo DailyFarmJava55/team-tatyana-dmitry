@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.FarmerRepository;
 import telran.auth.account.dto.AuthRequestDto;
@@ -27,6 +28,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
+	@Transactional
 	public AuthResponse registerFarmer(FarmerDto farmerDto) {
 		if (farmerDto.getEmail() == null || farmerDto.getPassword() == null) {
 			throw new InvalidUserDataException("Email and password cannot be null");
