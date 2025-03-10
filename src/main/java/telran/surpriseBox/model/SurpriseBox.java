@@ -2,6 +2,7 @@ package telran.surpriseBox.model;
 
 
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -32,7 +33,8 @@ public class SurpriseBox {
     @CollectionTable(name = "surprise_box_categories", joinColumns = @JoinColumn(name = "surprise_box_id"))
     @Column(name = "category")
     private List<Category> categories;
-
+    private UUID farmerId;
+    private BoxSize boxSize;
     private String description;
     private double price;
     private int quantity;
