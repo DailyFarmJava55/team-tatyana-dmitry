@@ -11,12 +11,8 @@ import org.springframework.stereotype.Repository;
 import telran.auth.account.model.Farmer;
 @Repository
 public interface FarmerRepository extends JpaRepository<Farmer, UUID> {
-	 Optional<Farmer> findByEmail(String email);
-	
-	 
+	Optional<Farmer> findByEmail(String email);
 	List<Farmer> findAll();
-
-	@Query("SELECT f FROM Farmer f WHERE f.farmName = ?1")	
 	Optional<Farmer> findByFarmName(String farmName);
 
 	boolean existsByEmail(String email);

@@ -17,7 +17,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-	@Value("${jwt.accessExpirationSec:900}") // 15 minutes
+	@Value("${jwt.accessExpirationSec:60}") // 15 minutes
     private int accessExpirationSec;
 
     @Value("${jwt.refreshExpirationSec:604800}") // 7 days
