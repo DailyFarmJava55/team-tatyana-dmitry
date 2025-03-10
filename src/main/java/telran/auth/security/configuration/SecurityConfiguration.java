@@ -2,12 +2,13 @@ package telran.auth.security.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.security.JwtAuthFilter;
@@ -24,7 +25,10 @@ public class SecurityConfiguration {
 	}
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(authorize -> authorize
+		http.csrf(csrf -> csrf.disable())
+		.headers(headers->headers.frameOptions(opt->opt.disable()))
+		.httpBasic(Customizer.withDefaults())
+		.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
 				.requestMatchers("/api/auth/user/register", "/api/auth/user/login").permitAll()
 				.requestMatchers("/api/auth/farmer/register", "/api/auth/farmer/login", "/api/auth/farmer/refresh").permitAll()
@@ -33,7 +37,7 @@ public class SecurityConfiguration {
 				.requestMatchers("/api/user/**").hasAuthority("USER")
 				.anyRequest().authenticated());
 
-		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class);
 		return http.build();
 	}
 
