@@ -40,6 +40,7 @@ public class User {
 	@Embedded
 	private Location location;
 
+	
 
 	@CreationTimestamp
 	private ZonedDateTime registeredAt;
