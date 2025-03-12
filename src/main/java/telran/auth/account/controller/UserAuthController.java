@@ -37,8 +37,9 @@ public class UserAuthController {
     }
 	
 	@PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        AuthResponse response = userAuthService.refreshAccessToken(refreshTokenRequest.getRefreshToken());
+    public ResponseEntity<AuthResponse> refreshAccessToken(@RequestHeader("x-refresh-token") String refreshToken) {
+		
+	    AuthResponse response = userAuthService.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(response);
     }
 
