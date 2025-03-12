@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
-import telran.auth.account.dto.RefreshTokenRequest;
 import telran.auth.account.service.farm.FarmAuthService;
 
 @RestController
