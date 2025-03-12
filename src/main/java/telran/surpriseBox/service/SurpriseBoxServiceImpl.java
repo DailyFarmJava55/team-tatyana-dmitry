@@ -2,6 +2,7 @@ package telran.surpriseBox.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -26,13 +27,13 @@ public class SurpriseBoxServiceImpl implements SurpriseBoxService {
     }
 
     @Override
-    public SurpriseBox getSurpriseBoxById(Long id) {
+    public SurpriseBox getSurpriseBoxById(UUID id) {
         Optional<SurpriseBox> surpriseBox = surpriseBoxRepository.findById(id);
         return surpriseBox.orElse(null);
     }
 
     @Override
-    public SurpriseBox updateSurpriseBox(Long id, SurpriseBox surpriseBox) {
+    public SurpriseBox updateSurpriseBox(UUID id, SurpriseBox surpriseBox) {
         if (surpriseBoxRepository.existsById(id)) {
             surpriseBox.setId(id);
             return surpriseBoxRepository.save(surpriseBox);
@@ -41,7 +42,7 @@ public class SurpriseBoxServiceImpl implements SurpriseBoxService {
     }
 
     @Override
-    public void deleteSurpriseBox(Long id) {
+    public void deleteSurpriseBox(UUID id) {
         surpriseBoxRepository.deleteById(id);
     }
 }
