@@ -1,6 +1,7 @@
 package telran.surpriseBox.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,19 +37,19 @@ public class SurpriseBoxController {
 	    }
 
 	    @GetMapping("/{id}")
-	    public ResponseEntity<SurpriseBox> getSurpriseBoxById(@PathVariable Long id) {
+	    public ResponseEntity<SurpriseBox> getSurpriseBoxById(@PathVariable UUID id) {
 	        SurpriseBox surpriseBox = surpriseBoxService.getSurpriseBoxById(id);
 	        return ResponseEntity.ok(surpriseBox);
 	    }
 
 	    @PutMapping("/{id}")
-	    public ResponseEntity<SurpriseBox> updateSurpriseBox(@PathVariable Long id, @RequestBody SurpriseBox surpriseBox) {
+	    public ResponseEntity<SurpriseBox> updateSurpriseBox(@PathVariable UUID id, @RequestBody SurpriseBox surpriseBox) {
 	        SurpriseBox updatedSurpriseBox = surpriseBoxService.updateSurpriseBox(id, surpriseBox);
 	        return ResponseEntity.ok(updatedSurpriseBox);
 	    }
 
 	    @DeleteMapping("/{id}")
-	    public ResponseEntity<Void> deleteSurpriseBox(@PathVariable Long id) {
+	    public ResponseEntity<Void> deleteSurpriseBox(@PathVariable UUID id) {
 	        surpriseBoxService.deleteSurpriseBox(id);
 	        return ResponseEntity.noContent().build();
 	    }

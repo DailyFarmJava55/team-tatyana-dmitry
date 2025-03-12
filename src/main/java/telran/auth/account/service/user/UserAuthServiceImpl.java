@@ -13,12 +13,12 @@ import telran.auth.account.dao.UserRepository;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
-import telran.auth.account.dto.exceptions.InvalidUserDataException;
-import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
-import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.User;
 import telran.auth.security.JwtService;
 import telran.auth.security.RevokedTokenService;
+import telran.exceptions.InvalidUserDataException;
+import telran.exceptions.UserAlreadyExistsException;
+import telran.exceptions.UserNotFoundException;
 
 @Service
 @RequiredArgsConstructor

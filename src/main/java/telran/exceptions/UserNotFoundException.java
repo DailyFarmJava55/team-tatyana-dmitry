@@ -1,4 +1,4 @@
-package telran.auth.account.dto.exceptions;
+package telran.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
 	

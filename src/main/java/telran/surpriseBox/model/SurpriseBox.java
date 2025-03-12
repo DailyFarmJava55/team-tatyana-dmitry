@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,14 +27,18 @@ import telran.auth.account.model.User;
 @NoArgsConstructor
 public class SurpriseBox {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
+	
+	@NotBlank(message = "Name cannot be empty")
+	private String name = "Surprise Box";
 
 	@ElementCollection(targetClass = Category.class)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "surprise_box_categories", joinColumns = @JoinColumn(name = "surprise_box_id"))
 	@Column(name = "category")
 	private List<Category> categories;
+	
 	private String description;
 
 	@ManyToOne
@@ -44,8 +49,11 @@ public class SurpriseBox {
 	@JoinColumn(name = "customer_id")
 	private User customer;
 
+	@Enumerated(EnumType.STRING)
 	private BoxSize boxSize;
 
 	private double price;
+	
+	@Column(nullable = false)
 	private int quantity;
 }
