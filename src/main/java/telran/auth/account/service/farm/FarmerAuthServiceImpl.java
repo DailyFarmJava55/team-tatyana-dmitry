@@ -1,10 +1,13 @@
 package telran.auth.account.service.farm;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -93,15 +96,22 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {
-		if (!jwtService.validateToken(refreshToken)) {
-	        throw new RuntimeException("Invalid or expired refresh token");
+	    if (!jwtService.validateToken(refreshToken)) {
+	        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
 	    }
 
-	    String email = jwtService.extractEmail(refreshToken);
-	    String role = jwtService.extractRole(refreshToken); 
+	    String email = Optional.ofNullable(jwtService.extractEmail(refreshToken))
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: email not found"));
+
+	    String role = Optional.ofNullable(jwtService.extractRole(refreshToken))
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: role not found"));
+
+	    UUID id = Optional.ofNullable(jwtService.extractId(refreshToken))
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: ID not found"));
+
 	    String newAccessToken = jwtService.generateAccessToken(email, role);
 
-	    return new AuthResponse(null,null, newAccessToken, refreshToken);
+	    return new AuthResponse(id, email, newAccessToken, refreshToken);
 	}
 
 }

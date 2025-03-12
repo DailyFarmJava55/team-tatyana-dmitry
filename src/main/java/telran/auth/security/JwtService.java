@@ -1,13 +1,17 @@
 package telran.auth.security;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -65,12 +69,48 @@ public class JwtService {
                 .parseClaimsJws(token).getBody().get("role", String.class);
     }
 
-    public Authentication parseToken(String token) throws JwtException {
-        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-        String email = claims.getSubject();
-        if (email == null) {
-            throw new JwtException("Invalid token: email not found");
+    public Authentication parseToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String email = claims.getSubject();
+            if (email == null) {
+                throw new JwtException("Invalid token: email not found");
+            }
+
+            return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+        } catch (JwtException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
         }
-        return new UsernamePasswordAuthenticationToken(email, null, null);
     }
+
+    public UUID extractId(String refreshToken) {
+        Claims claims = extractAllClaims(refreshToken);
+        
+        Object idObject = claims.get("id"); 
+        
+        if (idObject == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID not found in token");
+        }
+
+        String idString = idObject.toString(); 
+
+        try {
+            return UUID.fromString(idString); 
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid UUID format in token");
+        }
+	}
+	
+	private Claims extractAllClaims(String token) {
+	    return Jwts.parserBuilder()
+	            .setSigningKey(secretKey)
+	            .build()
+	            .parseClaimsJws(token)
+	            .getBody();
+	}
 }
