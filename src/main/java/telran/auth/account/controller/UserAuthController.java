@@ -1,9 +1,6 @@
 package telran.auth.account.controller;
 
 import java.security.Principal;
-import java.util.Set;
-
-import javax.management.relation.Role;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
