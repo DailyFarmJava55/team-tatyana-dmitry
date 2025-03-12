@@ -101,7 +101,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 	    String role = jwtService.extractRole(refreshToken); 
 	    String newAccessToken = jwtService.generateAccessToken(email, role);
 
-	    return new AuthResponse(null,null, newAccessToken, refreshToken);
+	    return new AuthResponse(null,email, newAccessToken, refreshToken);
 	}
 
 }
