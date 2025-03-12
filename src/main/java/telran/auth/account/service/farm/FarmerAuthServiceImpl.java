@@ -1,70 +1,69 @@
 package telran.auth.account.service.farm;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import telran.auth.account.dao.UserRepository;
+import telran.auth.account.dao.FarmerRepository;
+import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
 import telran.auth.account.dto.exceptions.InvalidUserDataException;
 import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
 import telran.auth.account.dto.exceptions.UserNotFoundException;
-import telran.auth.account.model.Role;
-import telran.auth.account.model.User;
+import telran.auth.account.model.Farmer;
 import telran.auth.security.JwtService;
 import telran.auth.security.RevokedTokenService;
 
 @Service
 @RequiredArgsConstructor
 public class FarmerAuthServiceImpl implements FarmAuthService {
-	private final UserRepository userRepository;
+	private final FarmerRepository farmerRepository;
 	private final JwtService jwtService;
 	private final RevokedTokenService revokedTokenService;
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
+	@Transactional
 	public AuthResponse registerFarmer(FarmerDto farmerDto) {
 		if (farmerDto.getEmail() == null || farmerDto.getPassword() == null) {
 			throw new InvalidUserDataException("Email and password cannot be null");
 		}
 
-		User user = userRepository.findByEmail(farmerDto.getEmail()).orElse(null);
-
-		if (user != null) {
-			if (user.getRoles().contains(Role.FARMER)) {
-				throw new UserAlreadyExistsException("Farmer with this email already exists!");
-			}
-			user.getRoles().add(Role.FARMER);
-			user.setFarmName(farmerDto.getFarmName());
-			user.setLocation(farmerDto.getLocation());
-		} else {
-			user = new User(farmerDto.getEmail(), passwordEncoder.encode(farmerDto.getPassword()),
-					farmerDto.getLanguage() != null ? farmerDto.getLanguage() : "en", farmerDto.getLocation());
-			user.getRoles().add(Role.FARMER);
-			user.setFarmName(farmerDto.getFarmName());
+		if (farmerRepository.findByEmail(farmerDto.getEmail()).isPresent()) {
+			throw new UserAlreadyExistsException("Farmer with this email already exists!");
 		}
 
-		user.setTimezone(farmerDto.getTimezone() != null ? farmerDto.getTimezone() : "Europe/Berlin");
-		User newFarmer = userRepository.save(user);
+		Farmer farmer = new Farmer(farmerDto.getEmail(), passwordEncoder.encode(farmerDto.getPassword()),
+				farmerDto.getFarmName(), farmerDto.getLanguage() != null ? farmerDto.getLanguage() : "en",
+				farmerDto.getTimezone() != null ? farmerDto.getTimezone() : "Europe/Berlin", farmerDto.getLocation());
+		farmer.setRegisteredAt(ZonedDateTime.now());
 
-		 Authentication auth = new UsernamePasswordAuthenticationToken(
-	                newFarmer.getEmail(),
-	                newFarmer.getPassword(),
-	                newFarmer.getRoles().stream()
-	                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-	                        .toList()
-	        );
-		 String token = jwtService.generateToken(auth);
-		return  new AuthResponse(newFarmer.getId(), newFarmer.getEmail(), newFarmer.getRoles(), token);
+		Farmer newFarmer = farmerRepository.save(farmer);
+
+		String accessToken = jwtService.generateAccessToken(newFarmer.getEmail(), "FARMER");
+		String refreshToken = jwtService.generateRefreshToken(newFarmer.getEmail());
+
+		return new AuthResponse(newFarmer.getId(),newFarmer.getEmail(), accessToken, refreshToken);
 	}
 
-	public String login(Authentication auth) {
-		return jwtService.generateToken(auth);
+	@Override
+	public AuthResponse authenticateFarmer(AuthRequestDto request) {
+		Farmer farmer = farmerRepository.findByEmail(request.getEmail())
+				.orElseThrow(() -> new InvalidUserDataException("Invalid email or password"));
+
+		if (!passwordEncoder.matches(request.getPassword(), farmer.getPassword())) {
+			throw new InvalidUserDataException("Invalid email or password");
+		}
+
+		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
+		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
+
+		return new AuthResponse(farmer.getId(),farmer.getEmail(), accessToken, refreshToken);
 	}
 
 	@Override
@@ -75,22 +74,34 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		}
 	}
 
-	public User findFarmerByEmail(String email) {
-		return userRepository.findByEmail(email).filter(user -> user.getRoles().contains(Role.FARMER))
-				.orElseThrow(() -> new UsernameNotFoundException("Farmer not found"));
+	@Override
+	public FarmerDto getFarmer(String email) {
+		Farmer farmer = farmerRepository.findByEmail(email)
+				.orElseThrow(() -> new UserNotFoundException("Farmer not found: " + email));
+		return new FarmerDto(farmer.getId(), farmer.getEmail(), "********", farmer.getFarmName(), farmer.getLanguage(),
+				farmer.getTimezone(), farmer.getLocation());
 	}
 
 	@Override
-	public FarmerDto getFarmer(String email) {
-		User farmer = userRepository.findByEmail(email)
-				.orElseThrow(() -> new UserNotFoundException("Farmer not found: " + email));
+	public void updateLastLogin(UUID id) {
+		Farmer farmer = farmerRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("Farmer not found with id: " + id));
+		farmer.setLastLoginAt(ZonedDateTime.now());
+		farmerRepository.save(farmer);
 
-		if (!farmer.getRoles().contains(Role.FARMER)) {
-			throw new UserNotFoundException("User is not a farmer: " + email);
-		}
+	}
 
-		return new FarmerDto(farmer.getId(), farmer.getEmail(), "********", farmer.getFarmName(), farmer.getLanguage(),
-				farmer.getTimezone(), farmer.getLocation());
+	@Override
+	public AuthResponse refreshAccessToken(String refreshToken) {
+		if (!jwtService.validateToken(refreshToken)) {
+	        throw new RuntimeException("Invalid or expired refresh token");
+	    }
+
+	    String email = jwtService.extractEmail(refreshToken);
+	    String role = jwtService.extractRole(refreshToken); 
+	    String newAccessToken = jwtService.generateAccessToken(email, role);
+
+	    return new AuthResponse(null,null, newAccessToken, refreshToken);
 	}
 
 }

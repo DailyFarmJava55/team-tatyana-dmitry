@@ -1,23 +1,22 @@
-package telran.auth.account.dto;
-
-import java.util.UUID;
+package telran.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import telran.auth.account.model.Location;
-import telran.auth.account.validation.ValidPassword;
 
 @Data
 @AllArgsConstructor
-public class UserDto {
-	private UUID id;
+public class UserUpdateRequest {
+	
 	@Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
     private String email;
 	
-	@ValidPassword
+	@NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 	
 	@NotBlank(message = "Language is required")

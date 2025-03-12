@@ -1,7 +1,8 @@
 package telran.auth.account.service.user;
 
-import org.springframework.security.core.Authentication;
+import java.util.UUID;
 
+import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.model.User;
@@ -16,7 +17,12 @@ public interface UserAuthService {
 
 	UserDto getUser(String name);
 
-	String login(Authentication auth);
+	
+	
+	void updateLastLogin(UUID id);
 
+AuthResponse	authenticateUser(AuthRequestDto request);
+
+AuthResponse refreshAccessToken(String refreshToken);
 
 }
