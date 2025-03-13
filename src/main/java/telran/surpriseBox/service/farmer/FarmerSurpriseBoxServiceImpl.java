@@ -101,7 +101,7 @@ public class FarmerSurpriseBoxServiceImpl implements FarmerSurpriseBoxService {
 	@Override
 	public List<SurpriseBox> getFarmerOrders(UUID farmerId) {
 		log.info("Fetching all sold boxes for Farmer ID: {}", farmerId);
-		 return surpriseBoxRepository.findByFarmerIdAndCustomerIsNotNull(farmerId);
+		 return surpriseBoxRepository.findByFarmerIdAndCustomersIsNotEmpty(farmerId);
 	}
 
 	

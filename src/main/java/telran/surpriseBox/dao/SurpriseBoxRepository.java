@@ -15,12 +15,12 @@ public interface SurpriseBoxRepository extends JpaRepository<SurpriseBox, UUID> 
 
 	List<SurpriseBox> findByFarmerId(UUID farmerId);
 
-	List<SurpriseBox> findByFarmerIdAndCustomerIsNotNull(UUID farmerId);
+	List<SurpriseBox> findByFarmerIdAndCustomersIsNotEmpty(UUID farmerId);
 	
 	//Customer
 	
-	 List<SurpriseBox> findByCustomerId(UUID customerId);
+	List<SurpriseBox> findByCustomers_Id(UUID customerId);
 	 
-	 List<SurpriseBox> findByCustomerIsNull();
+	 List<SurpriseBox> findByCustomersIsEmpty();
 
 }

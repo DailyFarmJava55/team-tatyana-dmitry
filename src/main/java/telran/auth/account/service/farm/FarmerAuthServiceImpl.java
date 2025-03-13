@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import telran.auth.account.dao.FarmerRepository;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
@@ -22,6 +23,7 @@ import telran.exceptions.InvalidUserDataException;
 import telran.exceptions.UserAlreadyExistsException;
 import telran.exceptions.UserNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FarmerAuthServiceImpl implements FarmAuthService {
@@ -96,22 +98,29 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {
+	    log.info("Refreshing access token for refreshToken: {}", refreshToken);
+	    
 	    if (!jwtService.validateToken(refreshToken)) {
+	        log.warn("Invalid or expired refresh token: {}", refreshToken);
 	        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
 	    }
 
 	    String email = Optional.ofNullable(jwtService.extractEmail(refreshToken))
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: email not found"));
+	            .orElseThrow(() -> {
+	                log.warn("Invalid token data: email not found in {}", refreshToken);
+	                return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: email not found");
+	            });
 
 	    String role = Optional.ofNullable(jwtService.extractRole(refreshToken))
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: role not found"));
-
-	    UUID id = Optional.ofNullable(jwtService.extractId(refreshToken))
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: ID not found"));
+	            .orElseThrow(() -> {
+	                log.warn("Invalid token data: role not found in {}", refreshToken);
+	                return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: role not found");
+	            });
 
 	    String newAccessToken = jwtService.generateAccessToken(email, role);
+	    log.info("Generated new access token for email {}", email);
 
-	    return new AuthResponse(id, email, newAccessToken, refreshToken);
+	    return new AuthResponse(null, email, newAccessToken, refreshToken);
 	}
 
 }

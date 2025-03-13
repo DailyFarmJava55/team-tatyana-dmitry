@@ -1,25 +1,21 @@
 package telran.auth.account.model;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import telran.surpriseBox.model.SurpriseBox;
 
 @Getter
 @Setter
@@ -44,8 +40,6 @@ public class User {
 	@Embedded
 	private Location location;
 
-	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<SurpriseBox> purchasedBoxes;
 
 	@CreationTimestamp
 	private ZonedDateTime registeredAt;
