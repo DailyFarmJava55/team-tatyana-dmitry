@@ -43,7 +43,7 @@ public class JwtService {
     public String generateRefreshToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
-                .claim("role", "REFRESH")
+                .claim("role", "REFRESH")//????
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationSec * 1000)) 
                 .signWith(secretKey, signatureAlgorithm)

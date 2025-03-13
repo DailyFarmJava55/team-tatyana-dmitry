@@ -67,6 +67,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
 		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+		updateLastLogin(user.getId());
 
 		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 
@@ -123,7 +124,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 	                return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: role not found");
 	            });
 
-	    String newAccessToken = jwtService.generateAccessToken(email, role);
+	    String newAccessToken = jwtService.generateAccessToken(email, role);//"USER");
 	    log.info("Generated new access token for email {}", email);
 
 	    return new AuthResponse(null, email, newAccessToken, refreshToken);

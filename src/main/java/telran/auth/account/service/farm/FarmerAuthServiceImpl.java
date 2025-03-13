@@ -67,6 +67,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 
 		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
 		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
+		updateLastLogin(farmer.getId());
 
 		return new AuthResponse(farmer.getId(),farmer.getEmail(), accessToken, refreshToken);
 	}

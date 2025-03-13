@@ -26,7 +26,6 @@ public class FarmAuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<AuthResponse> registerFarmer(@Valid @RequestBody FarmerDto farmerDto) {
-
 		AuthResponse response = farmAuthService.registerFarmer(farmerDto);
 		return ResponseEntity.ok(response);
 	}
