@@ -104,7 +104,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 		}
 
 		String email = jwtService.extractEmail(refreshToken);
-		String role = jwtService.extractRole(refreshToken);
+		String role = "USER";
 		String newAccessToken = jwtService.generateAccessToken(email, role);
 
 		return new AuthResponse(null, email, newAccessToken, refreshToken);
