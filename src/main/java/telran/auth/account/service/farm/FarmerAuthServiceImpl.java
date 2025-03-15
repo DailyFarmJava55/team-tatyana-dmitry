@@ -42,13 +42,13 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 				farmerDto.getFarmName(), farmerDto.getLanguage() != null ? farmerDto.getLanguage() : "en",
 				farmerDto.getTimezone() != null ? farmerDto.getTimezone() : "Europe/Berlin", farmerDto.getLocation());
 		farmer.setRegisteredAt(ZonedDateTime.now());
+		farmer.setLastLoginAt(ZonedDateTime.now());
+		farmerRepository.save(farmer);
 
-		Farmer newFarmer = farmerRepository.save(farmer);
-
-		String accessToken = jwtService.generateAccessToken(newFarmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshToken(newFarmer.getEmail());
-
-		return new AuthResponse(newFarmer.getId(),newFarmer.getEmail(), accessToken, refreshToken);
+		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
+		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
+		
+		return new AuthResponse(farmer.getId(),farmer.getEmail(), accessToken, refreshToken);
 	}
 
 	@Override
@@ -59,7 +59,10 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		if (!passwordEncoder.matches(request.getPassword(), farmer.getPassword())) {
 			throw new InvalidUserDataException("Invalid email or password");
 		}
-
+		
+		farmer.setLastLoginAt(ZonedDateTime.now());
+		farmerRepository.save(farmer);
+		
 		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
 		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
 
@@ -80,15 +83,6 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 				.orElseThrow(() -> new UserNotFoundException("Farmer not found: " + email));
 		return new FarmerDto(farmer.getId(), farmer.getEmail(), "********", farmer.getFarmName(), farmer.getLanguage(),
 				farmer.getTimezone(), farmer.getLocation());
-	}
-
-	@Override
-	public void updateLastLogin(UUID id) {
-		Farmer farmer = farmerRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("Farmer not found with id: " + id));
-		farmer.setLastLoginAt(ZonedDateTime.now());
-		farmerRepository.save(farmer);
-
 	}
 
 	@Override

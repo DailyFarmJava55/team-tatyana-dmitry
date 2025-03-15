@@ -41,17 +41,20 @@ public class UserAuthServiceImpl implements UserAuthService {
 
 		User user = new User(userDto.getEmail(), passwordEncoder.encode(userDto.getPassword()),
 				userDto.getLanguage() != null ? userDto.getLanguage() : "en", userDto.getLocation());
+		
 		user.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
 		user.setRegisteredAt(ZonedDateTime.now());
-		User newUser = userRepository.save(user);
+		user.setLastLoginAt(ZonedDateTime.now());
+		userRepository.save(user);
 
-		String accessToken = jwtService.generateAccessToken(newUser.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshToken(newUser.getEmail());
+		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
+		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-		return new AuthResponse(newUser.getId(), newUser.getEmail(), accessToken, refreshToken);
+		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 	}
 
 	@Override
+	@Transactional
 	public AuthResponse authenticateUser(AuthRequestDto request) {
 		User user = userRepository.findByEmail(request.getEmail())
 				.orElseThrow(() -> new InvalidUserDataException("Invalid email or password"));
@@ -62,16 +65,11 @@ public class UserAuthServiceImpl implements UserAuthService {
 
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
 		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
-
-		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
-
-	}
-
-	@Override
-	public void updateLastLogin(UUID id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found: " + id));
+	
 		user.setLastLoginAt(ZonedDateTime.now());
 		userRepository.save(user);
+		
+		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 
 	}
 

@@ -17,10 +17,6 @@ public interface UserAuthService {
 
 	UserDto getUser(String name);
 
-	
-	
-	void updateLastLogin(UUID id);
-
 AuthResponse	authenticateUser(AuthRequestDto request);
 
 AuthResponse refreshAccessToken(String refreshToken);

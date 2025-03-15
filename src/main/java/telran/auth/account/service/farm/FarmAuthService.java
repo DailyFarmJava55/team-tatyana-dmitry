@@ -14,8 +14,6 @@ public interface FarmAuthService {
 
 	FarmerDto getFarmer(String name);
 
-	void updateLastLogin(UUID id);
-
 	AuthResponse authenticateFarmer(AuthRequestDto request);
 
 	AuthResponse refreshAccessToken(String refreshToken);
