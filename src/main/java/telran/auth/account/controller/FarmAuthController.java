@@ -31,13 +31,13 @@ public class FarmAuthController {
 	}
 
 	@PostMapping("/login")
-
     public ResponseEntity<AuthResponse> loginFarmer(@Valid @RequestBody AuthRequestDto request) {
         return ResponseEntity.ok(farmAuthService.authenticateFarmer(request));
     }
 	
 	@PostMapping("/refresh")
-	 public ResponseEntity<AuthResponse> refreshAccessToken(@RequestHeader("x-refresh-token") String refreshToken) {
+	public ResponseEntity<AuthResponse> refreshAccessToken(@RequestHeader("x-refresh-token") String refreshToken) {
+	    System.out.println("refreshToken: " + refreshToken);
 	    AuthResponse response = farmAuthService.refreshAccessToken(refreshToken);
 	    return ResponseEntity.ok(response);
 	}

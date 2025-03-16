@@ -1,7 +1,5 @@
 package telran.auth.account.service.farm;
 
-import java.util.UUID;
-
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
@@ -13,8 +11,6 @@ public interface FarmAuthService {
 	void logout(String email);
 
 	FarmerDto getFarmer(String name);
-
-	void updateLastLogin(UUID id);
 
 	AuthResponse authenticateFarmer(AuthRequestDto request);
 
