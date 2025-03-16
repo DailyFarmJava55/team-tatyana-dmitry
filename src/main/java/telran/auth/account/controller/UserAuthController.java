@@ -14,7 +14,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
-import telran.auth.account.dto.RefreshTokenRequest;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.service.user.UserAuthService;
 
@@ -38,7 +37,6 @@ public class UserAuthController {
 	
 	@PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refreshAccessToken(@RequestHeader("x-refresh-token") String refreshToken) {
-		
 	    AuthResponse response = userAuthService.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(response);
     }
