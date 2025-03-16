@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import jakarta.persistence.Column;
@@ -22,6 +23,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @Table(name = "users")
+@DynamicUpdate
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -43,6 +45,8 @@ public class User {
 
 	@CreationTimestamp
 	private ZonedDateTime registeredAt;
+	
+	@Column(name = "last_login_at")
 	private ZonedDateTime lastLoginAt;
 
 	public User(String email, String password, String language, Location location) {

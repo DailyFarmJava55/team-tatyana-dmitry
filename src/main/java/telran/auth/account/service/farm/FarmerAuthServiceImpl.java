@@ -51,7 +51,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		Farmer newFarmer = farmerRepository.save(farmer);
 
 		String accessToken = jwtService.generateAccessToken(newFarmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshToken(newFarmer.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenFarmer(newFarmer.getEmail());
 
 		return new AuthResponse(newFarmer.getId(),newFarmer.getEmail(), accessToken, refreshToken);
 	}
@@ -66,10 +66,20 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		}
 
 		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenFarmer(farmer.getEmail());
 		updateLastLogin(farmer.getId());
 
 		return new AuthResponse(farmer.getId(),farmer.getEmail(), accessToken, refreshToken);
+	}
+	
+	@Transactional
+	@Override
+	public void updateLastLogin(UUID id) {
+		Farmer farmer = farmerRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("Farmer not found with id: " + id));
+		farmer.setLastLoginAt(ZonedDateTime.now());
+		farmerRepository.save(farmer);
+
 	}
 
 	@Override
@@ -88,14 +98,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 				farmer.getTimezone(), farmer.getLocation());
 	}
 
-	@Override
-	public void updateLastLogin(UUID id) {
-		Farmer farmer = farmerRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("Farmer not found with id: " + id));
-		farmer.setLastLoginAt(ZonedDateTime.now());
-		farmerRepository.save(farmer);
-
-	}
+	
 
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {

@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -21,7 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-
+@DynamicUpdate
 public class Farmer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -44,6 +45,8 @@ public class Farmer {
 	
 	@CreationTimestamp
 	private ZonedDateTime registeredAt;
+	
+	@Column(name = "last_login_at")
 	private ZonedDateTime lastLoginAt;
 	
 	public Farmer(String email, String password, String farmName, String language, String timezone, Location location) {

@@ -51,7 +51,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 		User newUser = userRepository.save(user);
 
 		String accessToken = jwtService.generateAccessToken(newUser.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshToken(newUser.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenUser(newUser.getEmail());
 
 		return new AuthResponse(newUser.getId(), newUser.getEmail(), accessToken, refreshToken);
 	}
@@ -66,13 +66,14 @@ public class UserAuthServiceImpl implements UserAuthService {
 		}
 
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenUser(user.getEmail());
 		updateLastLogin(user.getId());
 
 		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 
 	}
 
+	@Transactional
 	@Override
 	public void updateLastLogin(UUID id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found: " + id));
