@@ -26,7 +26,6 @@ public class FarmAuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<AuthResponse> registerFarmer(@Valid @RequestBody FarmerDto farmerDto) {
-
 		AuthResponse response = farmAuthService.registerFarmer(farmerDto);
 		return ResponseEntity.ok(response);
 	}
@@ -38,8 +37,7 @@ public class FarmAuthController {
     }
 	
 	@PostMapping("/refresh")
-	public ResponseEntity<AuthResponse> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
-	    refreshToken = refreshToken.substring(7);
+	 public ResponseEntity<AuthResponse> refreshAccessToken(@RequestHeader("x-refresh-token") String refreshToken) {
 	    AuthResponse response = farmAuthService.refreshAccessToken(refreshToken);
 	    return ResponseEntity.ok(response);
 	}

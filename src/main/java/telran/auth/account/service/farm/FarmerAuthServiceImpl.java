@@ -1,24 +1,29 @@
 package telran.auth.account.service.farm;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import telran.auth.account.dao.FarmerRepository;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
-import telran.auth.account.dto.exceptions.InvalidUserDataException;
-import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
-import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.Farmer;
 import telran.auth.security.JwtService;
 import telran.auth.security.RevokedTokenService;
+import telran.exceptions.InvalidUserDataException;
+import telran.exceptions.UserAlreadyExistsException;
+import telran.exceptions.UserNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FarmerAuthServiceImpl implements FarmAuthService {
@@ -46,7 +51,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		Farmer newFarmer = farmerRepository.save(farmer);
 
 		String accessToken = jwtService.generateAccessToken(newFarmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshToken(newFarmer.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenFarmer(newFarmer.getEmail());
 
 		return new AuthResponse(newFarmer.getId(),newFarmer.getEmail(), accessToken, refreshToken);
 	}
@@ -61,9 +66,20 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		}
 
 		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenFarmer(farmer.getEmail());
+		updateLastLogin(farmer.getId());
 
 		return new AuthResponse(farmer.getId(),farmer.getEmail(), accessToken, refreshToken);
+	}
+	
+	@Transactional
+	@Override
+	public void updateLastLogin(UUID id) {
+		Farmer farmer = farmerRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("Farmer not found with id: " + id));
+		farmer.setLastLoginAt(ZonedDateTime.now());
+		farmerRepository.save(farmer);
+
 	}
 
 	@Override
@@ -82,26 +98,33 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 				farmer.getTimezone(), farmer.getLocation());
 	}
 
-	@Override
-	public void updateLastLogin(UUID id) {
-		Farmer farmer = farmerRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("Farmer not found with id: " + id));
-		farmer.setLastLoginAt(ZonedDateTime.now());
-		farmerRepository.save(farmer);
-
-	}
+	
 
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {
-		if (!jwtService.validateToken(refreshToken)) {
-	        throw new RuntimeException("Invalid or expired refresh token");
+	    log.info("Refreshing access token for refreshToken: {}", refreshToken);
+	    
+	    if (!jwtService.validateToken(refreshToken)) {
+	        log.warn("Invalid or expired refresh token: {}", refreshToken);
+	        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
 	    }
 
-	    String email = jwtService.extractEmail(refreshToken);
-	    String role = jwtService.extractRole(refreshToken); 
-	    String newAccessToken = jwtService.generateAccessToken(email, role);
+	    String email = Optional.ofNullable(jwtService.extractEmail(refreshToken))
+	            .orElseThrow(() -> {
+	                log.warn("Invalid token data: email not found in {}", refreshToken);
+	                return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: email not found");
+	            });
 
-	    return new AuthResponse(null,null, newAccessToken, refreshToken);
+	    String role = Optional.ofNullable(jwtService.extractRole(refreshToken))
+	            .orElseThrow(() -> {
+	                log.warn("Invalid token data: role not found in {}", refreshToken);
+	                return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: role not found");
+	            });
+
+	    String newAccessToken = jwtService.generateAccessToken(email, role);
+	    log.info("Generated new access token for email {}", email);
+
+	    return new AuthResponse(null, email, newAccessToken, refreshToken);
 	}
 
 }

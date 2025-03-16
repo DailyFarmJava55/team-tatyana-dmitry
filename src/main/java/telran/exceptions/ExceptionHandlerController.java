@@ -1,4 +1,4 @@
-package telran.auth.account.dto.exceptions;
+package telran.exceptions;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;

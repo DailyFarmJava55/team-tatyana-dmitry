@@ -1,25 +1,30 @@
 package telran.auth.account.service.user;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import telran.auth.account.dao.UserRepository;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
-import telran.auth.account.dto.exceptions.InvalidUserDataException;
-import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
-import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.User;
 import telran.auth.security.JwtService;
 import telran.auth.security.RevokedTokenService;
+import telran.exceptions.InvalidUserDataException;
+import telran.exceptions.UserAlreadyExistsException;
+import telran.exceptions.UserNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserAuthServiceImpl implements UserAuthService {
@@ -46,7 +51,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 		User newUser = userRepository.save(user);
 
 		String accessToken = jwtService.generateAccessToken(newUser.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshToken(newUser.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenUser(newUser.getEmail());
 
 		return new AuthResponse(newUser.getId(), newUser.getEmail(), accessToken, refreshToken);
 	}
@@ -61,12 +66,14 @@ public class UserAuthServiceImpl implements UserAuthService {
 		}
 
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenUser(user.getEmail());
+		updateLastLogin(user.getId());
 
 		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 
 	}
 
+	@Transactional
 	@Override
 	public void updateLastLogin(UUID id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found: " + id));
@@ -99,15 +106,29 @@ public class UserAuthServiceImpl implements UserAuthService {
 
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {
-		if (!jwtService.validateToken(refreshToken)) {
-			throw new RuntimeException("Invalid or expired refresh token");
-		}
+	    log.info("Refreshing access token for refreshToken: {}", refreshToken);
+	    
+	    if (!jwtService.validateToken(refreshToken)) {
+	        log.warn("Invalid or expired refresh token: {}", refreshToken);
+	        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
+	    }
 
-		String email = jwtService.extractEmail(refreshToken);
-		String role = jwtService.extractRole(refreshToken);
-		String newAccessToken = jwtService.generateAccessToken(email, role);
+	    String email = Optional.ofNullable(jwtService.extractEmail(refreshToken))
+	            .orElseThrow(() -> {
+	                log.warn("Invalid token data: email not found in {}", refreshToken);
+	                return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: email not found");
+	            });
 
-		return new AuthResponse(null, null, newAccessToken, refreshToken);
+	    String role = Optional.ofNullable(jwtService.extractRole(refreshToken))
+	            .orElseThrow(() -> {
+	                log.warn("Invalid token data: role not found in {}", refreshToken);
+	                return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token data: role not found");
+	            });
+
+	    String newAccessToken = jwtService.generateAccessToken(email, role);//"USER");
+	    log.info("Generated new access token for email {}", email);
+
+	    return new AuthResponse(null, email, newAccessToken, refreshToken);
 	}
 
 }
