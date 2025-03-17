@@ -38,7 +38,6 @@ public class SecurityConfiguration {
      @Autowired
      @Qualifier("farmAuthenticationManager")
      private AuthenticationManager farmAuthenticationManager;
-
 	
      @Bean
      SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {

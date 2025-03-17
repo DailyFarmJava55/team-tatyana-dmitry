@@ -25,13 +25,11 @@ public class ServiceConfiguration {
 	@Bean
 	ModelMapper getModelMapper() {
 		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE)
-				.setMatchingStrategy(MatchingStrategies.STRICT);
-		modelMapper.typeMap(User.class, FarmerDto.class).addMappings(mapper -> {
-			mapper.map(User::getLocation, FarmerDto::setLocation);
-		});
-		return modelMapper;
-	}
+
+		modelMapper.getConfiguration()
+									.setFieldMatchingEnabled(true)
+									.setFieldAccessLevel(AccessLevel.PRIVATE)
+									.setMatchingStrategy(MatchingStrategies.STRICT);
 
 	@Bean
 	PasswordEncoder getPasswordEncoder() {

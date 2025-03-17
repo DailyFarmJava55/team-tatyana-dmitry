@@ -3,6 +3,7 @@ package telran.farmer.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import telran.utils.exceptions.UserNotFoundException;
 @RequiredArgsConstructor
 public class FarmerServiceImpl implements FarmerService {
 	private final FarmerRepository farmerRepository;
+	private final PasswordEncoder passwordEncoder;
 	@Override
 	public List<Farmer> getAllFarmers() {
 		return farmerRepository.findAll();
@@ -29,6 +31,12 @@ public class FarmerServiceImpl implements FarmerService {
 	public Farmer updateFarmer(UUID id, FarmerUpdateRequest request) {
 		 Farmer farmer = getFarmerById(id);
 	        if (request.getEmail() != null) farmer.setEmail(request.getEmail());
+	        if (request.getPassword() != null) farmer.setPassword(passwordEncoder.encode(request.getPassword()));
+	        if (request.getFarmName() != null) farmer.setFarmName(request.getFarmName());
+	        if (request.getLanguage() != null) farmer.setLanguage(request.getLanguage());
+	        if (request.getTimezone() != null) farmer.setTimezone(request.getTimezone());
+	       	if (request.getLocation() != null) farmer.setLocation(request.getLocation());
+	  
 	        return farmerRepository.save(farmer);
 	}
 
