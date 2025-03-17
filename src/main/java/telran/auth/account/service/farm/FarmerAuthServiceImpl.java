@@ -15,8 +15,8 @@ import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
 import telran.auth.account.model.Farmer;
-import telran.auth.security.JwtService;
-import telran.auth.security.RevokedTokenService;
+import telran.auth.security.jwt.RevokedTokenService;
+import telran.auth.security.jwt.farmer.FarmJwtServiceImpl;
 import telran.exceptions.InvalidUserDataException;
 import telran.exceptions.UserAlreadyExistsException;
 import telran.exceptions.UserNotFoundException;
@@ -26,7 +26,7 @@ import telran.exceptions.UserNotFoundException;
 @RequiredArgsConstructor
 public class FarmerAuthServiceImpl implements FarmAuthService {
 	private final FarmerRepository farmerRepository;
-	private final JwtService jwtService;
+	private final FarmJwtServiceImpl jwtService;
 	private final RevokedTokenService revokedTokenService;
 	private final PasswordEncoder passwordEncoder;
 

@@ -15,8 +15,8 @@ import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
 import telran.auth.account.model.User;
-import telran.auth.security.JwtService;
-import telran.auth.security.RevokedTokenService;
+import telran.auth.security.jwt.RevokedTokenService;
+import telran.auth.security.jwt.user.UserJwtServiceImpl;
 import telran.exceptions.InvalidUserDataException;
 import telran.exceptions.UserAlreadyExistsException;
 import telran.exceptions.UserNotFoundException;
@@ -26,7 +26,7 @@ import telran.exceptions.UserNotFoundException;
 @RequiredArgsConstructor
 public class UserAuthServiceImpl implements UserAuthService {
 	private final UserRepository userRepository;
-	private final JwtService jwtService;
+	private final UserJwtServiceImpl jwtService;
 	private final RevokedTokenService revokedTokenService;
 	private final PasswordEncoder passwordEncoder;
 
