@@ -21,9 +21,7 @@ public class ServiceConfiguration {
 									.setFieldMatchingEnabled(true)
 									.setFieldAccessLevel(AccessLevel.PRIVATE)
 									.setMatchingStrategy(MatchingStrategies.STRICT);
-		modelMapper.typeMap(User.class, FarmerDto.class).addMappings(mapper -> {
-	        mapper.map(User::getLocation, FarmerDto::setLocation);
-	    });
+	
 		return modelMapper;
 		}
 		
