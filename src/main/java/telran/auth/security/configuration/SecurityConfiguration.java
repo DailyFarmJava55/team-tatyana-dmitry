@@ -31,7 +31,7 @@ public class SecurityConfiguration {
 		.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**").permitAll()
 				.requestMatchers("/api/auth/user/register", "/api/auth/user/login").permitAll()
-				.requestMatchers("/api/auth/farmer/register", "/api/auth/farmer/login", "/api/auth/farmer/refresh").permitAll()
+				.requestMatchers("/api/auth/farmer/register", "/api/auth/farmer/login", "/api/auth/farmer/refresh","/api/auth/user/refresh").permitAll()
 				.requestMatchers("/api/auth/user/logout", "/api/auth/farmer/logout").authenticated()
 				.requestMatchers("/api/farmers/**").hasAuthority("FARMER")
 				.requestMatchers("/api/users/**").hasAuthority("USER")

@@ -1,24 +1,27 @@
 package telran.auth.account.service.farm;
 
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import telran.auth.account.dao.FarmerRepository;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
-import telran.auth.account.dto.exceptions.InvalidUserDataException;
-import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
-import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.Farmer;
 import telran.auth.security.JwtService;
 import telran.auth.security.RevokedTokenService;
+import telran.exceptions.InvalidUserDataException;
+import telran.exceptions.UserAlreadyExistsException;
+import telran.exceptions.UserNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FarmerAuthServiceImpl implements FarmAuthService {
@@ -46,9 +49,9 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		farmerRepository.save(farmer);
 
 		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
-		
-		return new AuthResponse(farmer.getId(),farmer.getEmail(), accessToken, refreshToken);
+		String refreshToken = jwtService.generateRefreshTokenFarmer(farmer.getEmail());
+
+		return new AuthResponse(farmer.getId(), farmer.getEmail(), accessToken, refreshToken);
 	}
 
 	@Override
@@ -59,14 +62,14 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		if (!passwordEncoder.matches(request.getPassword(), farmer.getPassword())) {
 			throw new InvalidUserDataException("Invalid email or password");
 		}
-		
+
 		farmer.setLastLoginAt(ZonedDateTime.now());
 		farmerRepository.save(farmer);
-		
-		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
 
-		return new AuthResponse(farmer.getId(),farmer.getEmail(), accessToken, refreshToken);
+		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
+		String refreshToken = jwtService.generateRefreshTokenFarmer(farmer.getEmail());
+
+		return new AuthResponse(farmer.getId(), farmer.getEmail(), accessToken, refreshToken);
 	}
 
 	@Override
@@ -87,15 +90,18 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {
+		log.info("Refreshing access token for refreshToken: {}", refreshToken);
+
 		if (!jwtService.validateToken(refreshToken)) {
-	        throw new RuntimeException("Invalid or expired refresh token");
-	    }
+			log.warn("Invalid or expired refresh token: {}", refreshToken);
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
+		}
+		String email = jwtService.extractEmail(refreshToken);
+		String role = "FARMER";
+		String newAccessToken = jwtService.generateAccessToken(email, role);
 
-	    String email = jwtService.extractEmail(refreshToken);
-	    String role = "FARMER"; 
-	    String newAccessToken = jwtService.generateAccessToken(email, role);
+		return new AuthResponse(null, email, newAccessToken, refreshToken);
 
-	    return new AuthResponse(null,email, newAccessToken, refreshToken);
 	}
 
 }

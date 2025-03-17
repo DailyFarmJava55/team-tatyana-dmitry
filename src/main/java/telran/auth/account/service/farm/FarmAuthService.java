@@ -1,7 +1,5 @@
 package telran.auth.account.service.farm;
 
-import java.util.UUID;
-
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;

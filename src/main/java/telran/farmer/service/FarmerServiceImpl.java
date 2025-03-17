@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.FarmerRepository;
-import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.Farmer;
+import telran.exceptions.UserNotFoundException;
 import telran.farmer.dto.FarmerUpdateRequest;
 @Service
 @RequiredArgsConstructor

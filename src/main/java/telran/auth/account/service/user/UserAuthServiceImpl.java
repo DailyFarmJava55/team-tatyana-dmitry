@@ -1,25 +1,27 @@
 package telran.auth.account.service.user;
 
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import telran.auth.account.dao.UserRepository;
 import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.UserDto;
-import telran.auth.account.dto.exceptions.InvalidUserDataException;
-import telran.auth.account.dto.exceptions.UserAlreadyExistsException;
-import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.User;
 import telran.auth.security.JwtService;
 import telran.auth.security.RevokedTokenService;
+import telran.exceptions.InvalidUserDataException;
+import telran.exceptions.UserAlreadyExistsException;
+import telran.exceptions.UserNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserAuthServiceImpl implements UserAuthService {
@@ -41,14 +43,14 @@ public class UserAuthServiceImpl implements UserAuthService {
 
 		User user = new User(userDto.getEmail(), passwordEncoder.encode(userDto.getPassword()),
 				userDto.getLanguage() != null ? userDto.getLanguage() : "en", userDto.getLocation());
-		
+
 		user.setTimezone(userDto.getTimezone() != null ? userDto.getTimezone() : "Europe/Berlin");
 		user.setRegisteredAt(ZonedDateTime.now());
 		user.setLastLoginAt(ZonedDateTime.now());
 		userRepository.save(user);
 
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+		String refreshToken = jwtService.generateRefreshTokenUser(user.getEmail());
 
 		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 	}
@@ -62,15 +64,13 @@ public class UserAuthServiceImpl implements UserAuthService {
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new InvalidUserDataException("Invalid email or password");
 		}
-
-		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
-	
 		user.setLastLoginAt(ZonedDateTime.now());
 		userRepository.save(user);
 		
-		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
+		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
+		String refreshToken = jwtService.generateRefreshTokenUser(user.getEmail());
 
+		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
 	}
 
 	@Override
@@ -80,32 +80,29 @@ public class UserAuthServiceImpl implements UserAuthService {
 			revokedTokenService.revokeToken(token);
 		}
 	}
-	
-	@Override
-	public User findUserByEmail(String email) {
-		return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-	}
 
 	@Override
 	public UserDto getUser(String email) {
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException("User not found: " + email));
-
 		return new UserDto(user.getId(), user.getEmail(), "********", user.getLanguage(), user.getTimezone(),
 				user.getLocation());
 	}
 
 	@Override
 	public AuthResponse refreshAccessToken(String refreshToken) {
-		if (!jwtService.validateToken(refreshToken)) {
-			throw new RuntimeException("Invalid or expired refresh token");
-		}
+		log.info("Refreshing access token for refreshToken: {}", refreshToken);
 
+		if (!jwtService.validateToken(refreshToken)) {
+			log.warn("Invalid or expired refresh token: {}", refreshToken);
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
+		}
 		String email = jwtService.extractEmail(refreshToken);
 		String role = "USER";
 		String newAccessToken = jwtService.generateAccessToken(email, role);
 
 		return new AuthResponse(null, email, newAccessToken, refreshToken);
+
 	}
 
 }

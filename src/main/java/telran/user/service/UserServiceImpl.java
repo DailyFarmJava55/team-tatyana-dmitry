@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
-import telran.auth.account.dto.exceptions.UserNotFoundException;
 import telran.auth.account.model.User;
+import telran.exceptions.UserNotFoundException;
 import telran.user.dto.UserUpdateRequest;
 @Service
 @RequiredArgsConstructor
