@@ -50,9 +50,9 @@ public class UserAuthServiceImpl implements UserAuthService {
 		userRepository.save(user);
 
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshTokenUser(user.getEmail());
+		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
+		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken, "USER");
 	}
 
 	@Override
@@ -68,9 +68,9 @@ public class UserAuthServiceImpl implements UserAuthService {
 		userRepository.save(user);
 		
 		String accessToken = jwtService.generateAccessToken(user.getEmail(), "USER");
-		String refreshToken = jwtService.generateRefreshTokenUser(user.getEmail());
+		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken);
+		return new AuthResponse(user.getId(), user.getEmail(), accessToken, refreshToken,"USER");
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class UserAuthServiceImpl implements UserAuthService {
 		String role = "USER";
 		String newAccessToken = jwtService.generateAccessToken(email, role);
 
-		return new AuthResponse(null, email, newAccessToken, refreshToken);
+		return new AuthResponse(null, email, newAccessToken, refreshToken, role);
 
 	}
 

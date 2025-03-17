@@ -40,25 +40,15 @@ public class JwtService {
                 .compact();
     }
 
-    public String generateRefreshTokenFarmer(String email) {
+    public String generateRefreshToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
-                .claim("role", "FARMER")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationSec * 1000)) 
                 .signWith(secretKey, signatureAlgorithm)
                 .compact();
     }
     
-    public String generateRefreshTokenUser(String email) {
-        return Jwts.builder()
-                .setSubject(email)
-                .claim("role", "USER")
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationSec * 1000)) 
-                .signWith(secretKey, signatureAlgorithm)
-                .compact();
-    }
 
     public boolean validateToken(String token) {
         try {
