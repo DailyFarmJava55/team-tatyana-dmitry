@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import telran.auth.account.dao.UserRepository;
-import telran.exceptions.UserNotFoundException;
+import telran.utils.exceptions.UserNotFoundException;
 @Service("userDetailsService")
 @RequiredArgsConstructor
 public class UserDetailsServiceUserImpl implements UserDetailsService {

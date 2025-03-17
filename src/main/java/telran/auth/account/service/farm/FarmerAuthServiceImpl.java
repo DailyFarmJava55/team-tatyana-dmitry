@@ -17,9 +17,9 @@ import telran.auth.account.dto.FarmerDto;
 import telran.auth.account.model.Farmer;
 import telran.auth.security.jwt.RevokedTokenService;
 import telran.auth.security.jwt.farmer.FarmJwtServiceImpl;
-import telran.exceptions.InvalidUserDataException;
-import telran.exceptions.UserAlreadyExistsException;
-import telran.exceptions.UserNotFoundException;
+import telran.utils.exceptions.InvalidUserDataException;
+import telran.utils.exceptions.UserAlreadyExistsException;
+import telran.utils.exceptions.UserNotFoundException;
 
 @Slf4j
 @Service
