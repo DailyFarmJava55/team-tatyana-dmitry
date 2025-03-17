@@ -15,18 +15,18 @@ import telran.auth.account.dto.AuthRequestDto;
 import telran.auth.account.dto.AuthResponse;
 import telran.auth.account.dto.FarmerDto;
 import telran.auth.account.model.Farmer;
-import telran.auth.security.JwtService;
-import telran.auth.security.RevokedTokenService;
-import telran.exceptions.InvalidUserDataException;
-import telran.exceptions.UserAlreadyExistsException;
-import telran.exceptions.UserNotFoundException;
+import telran.auth.security.jwt.RevokedTokenService;
+import telran.auth.security.jwt.farmer.FarmJwtServiceImpl;
+import telran.utils.exceptions.InvalidUserDataException;
+import telran.utils.exceptions.UserAlreadyExistsException;
+import telran.utils.exceptions.UserNotFoundException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FarmerAuthServiceImpl implements FarmAuthService {
 	private final FarmerRepository farmerRepository;
-	private final JwtService jwtService;
+	private final FarmJwtServiceImpl jwtService;
 	private final RevokedTokenService revokedTokenService;
 	private final PasswordEncoder passwordEncoder;
 
@@ -49,9 +49,9 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		farmerRepository.save(farmer);
 
 		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshTokenFarmer(farmer.getEmail());
+		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
 
-		return new AuthResponse(farmer.getId(), farmer.getEmail(), accessToken, refreshToken);
+		return new AuthResponse(farmer.getId(), farmer.getEmail(), accessToken, refreshToken, "FARMER");
 	}
 
 	@Override
@@ -67,9 +67,9 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		farmerRepository.save(farmer);
 
 		String accessToken = jwtService.generateAccessToken(farmer.getEmail(), "FARMER");
-		String refreshToken = jwtService.generateRefreshTokenFarmer(farmer.getEmail());
+		String refreshToken = jwtService.generateRefreshToken(farmer.getEmail());
 
-		return new AuthResponse(farmer.getId(), farmer.getEmail(), accessToken, refreshToken);
+		return new AuthResponse(farmer.getId(), farmer.getEmail(), accessToken, refreshToken, "FARMER");
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class FarmerAuthServiceImpl implements FarmAuthService {
 		String role = "FARMER";
 		String newAccessToken = jwtService.generateAccessToken(email, role);
 
-		return new AuthResponse(null, email, newAccessToken, refreshToken);
+		return new AuthResponse(null, email, newAccessToken, refreshToken, role);
 
 	}
 
