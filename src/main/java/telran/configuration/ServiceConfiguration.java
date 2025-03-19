@@ -22,14 +22,6 @@ import telran.auth.security.jwt.user.UserDetailsServiceUserImpl;
 
 @Configuration
 public class ServiceConfiguration {
-	@Bean
-	ModelMapper getModelMapper() {
-		ModelMapper modelMapper = new ModelMapper();
-
-		modelMapper.getConfiguration()
-									.setFieldMatchingEnabled(true)
-									.setFieldAccessLevel(AccessLevel.PRIVATE)
-									.setMatchingStrategy(MatchingStrategies.STRICT);
 
 	@Bean
 	PasswordEncoder getPasswordEncoder() {
