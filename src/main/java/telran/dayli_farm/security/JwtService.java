@@ -33,20 +33,26 @@ public class JwtService {
 	}
 
 	public String generateAccessToken(String uuid, String email) {
-		String token = Jwts.builder().setSubject(uuid).claim("email", email)
+		String token = Jwts.builder()
+				.setSubject(uuid)
+				.claim("email", email)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + accessExpirationSec * 1000))
-				.signWith(getSigningKey()).compact();
+				.signWith(getSigningKey())
+				.compact();
 
 		log.debug("JwtService. Generated access token: {}", token);
 		return token;
 	}
 
 	public String generateRefreshToken(String uuid, String email) {
-		String token = Jwts.builder().setSubject(uuid).claim("email", email)
+		String token = Jwts.builder()
+				.setSubject(uuid)
+				.claim("email", email)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + refreshExpirationSec * 1000))
-				.signWith(getSigningKey()).compact();
+				.signWith(getSigningKey())
+				.compact();
 
 		log.debug("JwtService. Generated refresh token: {}", token);
 		return token;
