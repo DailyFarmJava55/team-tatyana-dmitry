@@ -1,0 +1,535 @@
+{
+	"info": {
+		"_postman_id": "82b68c36-4d7f-4dc9-82d9-1af00ca2547a",
+		"name": "Daily Farm API Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "40469842"
+	},
+	"item": [
+		{
+			"name": "Farmer",
+			"item": [
+				{
+					"name": "Register Farmer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Farmer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/login"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Farmer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/logout"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Farmer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Farmer Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/password"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Farmer Email",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/email"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Farmer Company Name",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/company"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Farmer Address",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/address"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Farmer Coordinates",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/coordinates"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Farmer Phone",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/phone"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Farmer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Farmer Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/refresh"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Farmer Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/farmer/password-reset"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Register Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\": \"+1234567890\",\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"SecurePassword123\",\r\n    \"city\": \"Tel Aviv\",\r\n    \"coordinates\": {\r\n        \"latitude\": 32.0853,\r\n        \"longitude\": 34.7818\r\n    },\r\n    \"firstName\": \"Peter\",\r\n    \"lastName\": \"Petrov\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/customer/register"
+					},
+					"response": [
+						{
+							"name": "Register Customer",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phone\": \"+1234567890\",\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"SecurePassword123\",\r\n    \"city\": \"Tel Aviv\",\r\n    \"coordinates\": {\r\n        \"latitude\": 32.0853,\r\n        \"longitude\": 34.7818\r\n    },\r\n    \"firstName\": \"Peter\",\r\n    \"lastName\": \"Petrov\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/customer/register"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Mar 2025 11:19:38 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"phone\": \"+1234567890\",\n    \"email\": \"user@example.com\",\n    \"password\": \"SecurePassword123\",\n    \"city\": \"Tel Aviv\",\n    \"coordinates\": {\n        \"latitude\": 32.0853,\n        \"longitude\": 34.7818\n    },\n    \"firstName\": \"Peter\",\n    \"lastName\": \"Petrov\"\n}"
+						},
+						{
+							"name": "Register Customer",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phone\": \"+1234567890\",\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"SecurePassword123\",\r\n    \"city\": \"Tel Aviv\",\r\n    \"coordinates\": {\r\n        \"latitude\": 32.0853,\r\n        \"longitude\": 34.7818\r\n    },\r\n    \"firstName\": \"Peter\",\r\n    \"lastName\": \"Petrov\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/customer/register"
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Mar 2025 14:52:56 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"timestamp\": \"2025-03-20T14:52:56.918+00:00\",\n    \"status\": 409,\n    \"error\": \"Conflict\",\n    \"path\": \"/customer/register\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"SecurePassword123\"  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/customer/login"
+					},
+					"response": [
+						{
+							"name": "Login Customer",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"SecurePassword123\"  \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/customer/login"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Mar 2025 14:22:18 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZjFiNGM4OS0wYzU3LTQ5MmEtYmVhZC1hMGZkZGFlZGE4OTYiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3NDI0ODA1MzcsImV4cCI6MTc0MjQ4MTEzN30.abb-kEMocDu6SdLlzNwiwdF8N7A-dBmrXF4zTZx58KM\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlZjFiNGM4OS0wYzU3LTQ5MmEtYmVhZC1hMGZkZGFlZGE4OTYiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3NDI0ODA1MzcsImV4cCI6MTc0MzA4NTMzN30.Qj1U3doze9yR4CVK0zMEuUicv8U80HxfMN6oTdajJUU\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/customer/logout"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Customer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/customer/"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Customer Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/customer/password"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Customer Email",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/customer/email"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Customer Name",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/customer/name"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Customer Phone",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "{{baseUrl}}/customer/phone"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/customer/"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Customer Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/customer/refresh"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Customer Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/customer/password-reset"
+					},
+					"response": []
+				},
+				{
+					"name": "Get current customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIyMUBtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQyMjE4OTI2LCJleHAiOjE3NDIyMTk1MjZ9.OHBmkAHEma5g5D98zuiyDbFfY7Jd06P7XCmYHCFpDO0"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/customer/profile"
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseUrl}}/customer/profile"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 20 Mar 2025 16:18:28 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"5f128048-3618-4e75-816b-ee826f5fd0cd\",\n    \"email\": \"user@example.com\",\n    \"firstName\": \"Peter\",\n    \"lastName\": \"Petrov\",\n    \"phone\": \"+1234567890\",\n    \"city\": \"Tel Aviv\"\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}
