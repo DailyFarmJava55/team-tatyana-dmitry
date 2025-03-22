@@ -1,4 +1,4 @@
-package telran.dayli_farm.api.dto;
+package telran.dayli_farm.customer.dto;
 
 import java.util.UUID;
 

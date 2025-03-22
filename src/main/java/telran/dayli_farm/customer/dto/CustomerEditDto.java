@@ -1,4 +1,4 @@
-package telran.dayli_farm.api.dto;
+package telran.dayli_farm.customer.dto;
 
 import static telran.dayli_farm.api.message.ErrorMessages.EMAIL_IS_NOT_VALID;
 import static telran.dayli_farm.api.message.ErrorMessages.LAST_NAME_IS_NOT_VALID;

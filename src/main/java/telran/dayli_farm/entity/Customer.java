@@ -18,7 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import telran.dayli_farm.api.dto.CustomerRegisterDto;
+import telran.dayli_farm.customer.dto.CustomerRegisterDto;
 
 @Entity
 @NoArgsConstructor

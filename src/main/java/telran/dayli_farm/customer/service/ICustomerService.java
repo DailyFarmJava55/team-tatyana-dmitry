@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.validation.Valid;
 import telran.dayli_farm.api.dto.ChangePasswordRequestDto;
-import telran.dayli_farm.api.dto.CustomerDto;
-import telran.dayli_farm.api.dto.CustomerRegisterDto;
-import telran.dayli_farm.api.dto.CustomerEditDto;
 import telran.dayli_farm.api.dto.LoginRequestDto;
 import telran.dayli_farm.api.dto.token.TokenResponseDto;
+import telran.dayli_farm.customer.dto.CustomerDto;
+import telran.dayli_farm.customer.dto.CustomerEditDto;
+import telran.dayli_farm.customer.dto.CustomerRegisterDto;
 import telran.dayli_farm.entity.Customer;
 
 public interface ICustomerService {
