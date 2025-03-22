@@ -5,7 +5,13 @@ public interface ErrorMessages {
 	String PASSWORD_IS_NOT_VALID = "Password must be at least 8 characters long";
 	String PASSWORD_IS_REQUIRED = "Password is required";
 	String OLD_NEW_PASSWORD_REQUARED = "Old password and new password - requared field";
-			
+	String OLD_PASSWORD_IS_NOT_CORECT= "Old password is not correct";
+	
+	String EMAIL_IS_NOT_VALID = "Email is not valid";
+	String NAME_IS_NOT_VALID = "Name is not valid";
+	String LAST_NAME_IS_NOT_VALID = "Last name is not valid";
+	String PHONE_NUMBER_IS_NOT_VALID = "Phone number is not valid";
+	String PHONE_IS_REQUIRED = "Phone is required";
 
 	String WRONG_USER_NAME_OR_PASSWORD = "Wrong user name or password";
 	String USER_NOT_FOUND = "User is not found";

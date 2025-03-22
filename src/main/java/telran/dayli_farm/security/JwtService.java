@@ -3,6 +3,7 @@ package telran.dayli_farm.security;
 import java.security.Key;
 import java.util.Date;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -107,4 +108,13 @@ public class JwtService {
 	public Date getExpirationDate(String token) {
 		return extractAllClaims(token).getExpiration();
 	}
+
+	public Date extractExpiration(String token) {
+		 log.debug("JwtService. Extracting expiration date from token...");
+	        return extractClaim(token, Claims::getExpiration);
+	}
+	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 }

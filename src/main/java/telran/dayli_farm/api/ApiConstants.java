@@ -33,7 +33,7 @@ public interface ApiConstants {
 	String CUSTOMER_CHANGE_FIRST_LAST_NAME = "/customer/name";
 	String CUSTOMER_CHANGE_PHONE = "/customer/phone";
 	
-	String CUSTOMER_REMOVE = "/customer/";
+	String CUSTOMER_REMOVE = "/customer/remove";
 	String CUSTOMER_REFRESH_TOKEN = "/customer/refresh";
 	String CUSTOMER_RESET_PASSWORD = "/customer/password-reset";
 	

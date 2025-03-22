@@ -13,4 +13,5 @@ public interface CustomerCredentialRepository extends JpaRepository<CustomerCred
 
 	CustomerCredential findByCustomer(Customer customer);
 
+
 }

@@ -4,11 +4,15 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,6 +47,9 @@ public class Customer {
 
     @Column(nullable = true)
     private String city;
+    
+    @OneToOne(mappedBy = "customer", cascade = jakarta.persistence.CascadeType.REMOVE)
+    private CustomerCredential credential;
 
 //	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
 //	List<Order> orders;
@@ -53,7 +60,7 @@ public class Customer {
 	    }
 
 
-    public static Customer of(CustomerRegisterDto dto) {
+    public static Customer of(@Valid CustomerRegisterDto dto) {
         return Customer.builder()
             .email(dto.getEmail())
             .firstName(dto.getFirstName())
