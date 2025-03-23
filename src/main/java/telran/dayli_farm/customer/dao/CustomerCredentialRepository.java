@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import telran.dayli_farm.entity.Customer;
-import telran.dayli_farm.entity.CustomerCredential;
+import telran.dayli_farm.customer.entity.Customer;
+import telran.dayli_farm.customer.entity.CustomerCredential;
 
 @Repository
 public interface CustomerCredentialRepository extends JpaRepository<CustomerCredential, UUID> {

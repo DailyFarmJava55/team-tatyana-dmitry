@@ -32,8 +32,8 @@ import telran.dayli_farm.api.dto.token.TokenResponseDto;
 import telran.dayli_farm.customer.dto.CustomerDto;
 import telran.dayli_farm.customer.dto.CustomerEditDto;
 import telran.dayli_farm.customer.dto.CustomerRegisterDto;
+import telran.dayli_farm.customer.entity.Customer;
 import telran.dayli_farm.customer.service.ICustomerService;
-import telran.dayli_farm.entity.Customer;
 import telran.dayli_farm.security.CustomUserDetailService;
 import telran.dayli_farm.security.service.AuthService;
 

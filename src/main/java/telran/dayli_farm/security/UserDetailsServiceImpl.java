@@ -13,8 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.dayli_farm.customer.dao.CustomerCredentialRepository;
 import telran.dayli_farm.customer.dao.CustomerRepository;
-import telran.dayli_farm.entity.Customer;
-import telran.dayli_farm.entity.CustomerCredential;
+import telran.dayli_farm.customer.entity.Customer;
+import telran.dayli_farm.customer.entity.CustomerCredential;
+import telran.dayli_farm.farmer.dao.FarmerCredentialRepository;
+import telran.dayli_farm.farmer.dao.FarmerRepository;
+import telran.dayli_farm.farmer.entity.Farmer;
+import telran.dayli_farm.farmer.entity.FarmerCredential;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,9 @@ import telran.dayli_farm.entity.CustomerCredential;
 public class UserDetailsServiceImpl implements UserDetailsService {
 	private final CustomerRepository customerRepo;
 	private final CustomerCredentialRepository customerCredentialRepo;
+	
+	private final FarmerRepository farmerRepo;
+	private final FarmerCredentialRepository farmerCredentialRepo;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -33,14 +40,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			return new CustomUserDetailService(customer.getEmail(), customerCredential.getHashedPassword(),
 					List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")), customer.getId());
 		}
-//		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(username);
-//		if (farmerOptional.isPresent()) {
-//			Farmer farmer = farmerOptional.get();
-//			FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
-//			return new UserDetailsWithId(farmer.getEmail(), credential.getHashedPassword(),
-//					List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
-//		}
-
+		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
+		if (farmerOptional.isPresent()) {
+			Farmer farmer = farmerOptional.get();
+			FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
+			return new CustomUserDetailService(farmer.getEmail(), credential.getHashedPassword(),
+					List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
+		}
 		throw new UsernameNotFoundException("User not found");
 	}
 }

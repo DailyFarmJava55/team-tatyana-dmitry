@@ -1,4 +1,4 @@
-package telran.dayli_farm.entity;
+package telran.dayli_farm.customer.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

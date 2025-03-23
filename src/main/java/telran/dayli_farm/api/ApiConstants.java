@@ -6,6 +6,7 @@ public interface ApiConstants {
 	String FARMER_REGISTER = "/farmer/register";
 	String FARMER_LOGIN = "/farmer/login";
 	String FARMER_LOGOUT = "/farmer/logout";
+	String FARMER_CURRENT = "/farmer/profile";
 	
 	String FARMER_EDIT = "/farmer/";
 	String FARMER_CHANGE_PASSWORD = "/farmer/password";

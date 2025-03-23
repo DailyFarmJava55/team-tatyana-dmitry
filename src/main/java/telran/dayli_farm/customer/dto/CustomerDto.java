@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import telran.dayli_farm.entity.Customer;
+import telran.dayli_farm.customer.entity.Customer;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

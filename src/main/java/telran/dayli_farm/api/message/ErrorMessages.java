@@ -19,9 +19,17 @@ public interface ErrorMessages {
 
 	String FARMER_WITH_THIS_EMAIL_EXISTS = "Farmer with this email exists";
 	String FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS = "Farmer with this email is not exists";
-
+	String FARM_NAME_IS_REQUIRED = "Company name is required";
+	String FARMER_NOT_FOUND = "Farmer not found";
+	
 	String CUSTOMER_WITH_THIS_EMAIL_EXISTS = "Customer with this email exists";
 	String CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS = "Customer with this email is not exists";
+	
+	String LONGITUDE_REQUIRED = "Longitude is required";
+	String INVALID_LONGITUDE = "Longitude must be between -180 and 180 degrees";
+	String LATITUDE_REQUIRED ="Latitude is required";
+	String INVALID_LATITUDE = "Latitude must be between -90 and 90 degrees";
+	
 	
 
 }

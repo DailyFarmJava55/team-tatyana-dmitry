@@ -1,10 +1,7 @@
 package telran.dayli_farm.customer.service;
 
-import static telran.dayli_farm.api.message.ErrorMessages.CUSTOMER_WITH_THIS_EMAIL_EXISTS;
-import static telran.dayli_farm.api.message.ErrorMessages.CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS;
-import static telran.dayli_farm.api.message.ErrorMessages.OLD_PASSWORD_IS_NOT_CORECT;
-import static telran.dayli_farm.api.message.ErrorMessages.USER_NOT_FOUND;
-import static telran.dayli_farm.api.message.SuccessMessages.USER_DELETED_SUCCESSFULLY;
+import static telran.dayli_farm.api.message.ErrorMessages.*;
+import static telran.dayli_farm.api.message.SuccessMessages.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,8 +24,8 @@ import telran.dayli_farm.customer.dao.CustomerRepository;
 import telran.dayli_farm.customer.dto.CustomerDto;
 import telran.dayli_farm.customer.dto.CustomerEditDto;
 import telran.dayli_farm.customer.dto.CustomerRegisterDto;
-import telran.dayli_farm.entity.Customer;
-import telran.dayli_farm.entity.CustomerCredential;
+import telran.dayli_farm.customer.entity.Customer;
+import telran.dayli_farm.customer.entity.CustomerCredential;
 import telran.dayli_farm.security.service.AuthService;
 import telran.dayli_farm.security.service.RevokedTokenService;
 
@@ -41,8 +38,8 @@ public class CustomerServiceImpl implements ICustomerService {
 	private final CustomerCredentialRepository customerCredentialRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthService authService;
-	//private final JwtService jwtService;
-	private final RevokedTokenService revokedTokenService;;
+	// private final JwtService jwtService;
+	private final RevokedTokenService revokedTokenService;
 
 	@Override
 	@Transactional
@@ -50,15 +47,12 @@ public class CustomerServiceImpl implements ICustomerService {
 		checkEmail(customerRegisterDto.getEmail());
 		Customer customer = Customer.of(customerRegisterDto);
 		customerRepository.save(customer);
-		
-		CustomerCredential credential = CustomerCredential.builder()
-                .createdAt(LocalDateTime.now())
-                .passwordLastUpdated(LocalDateTime.now())
-                .hashedPassword(passwordEncoder.encode(customerRegisterDto.getPassword()))
-                .customer(customer)
-                .build();
+
+		CustomerCredential credential = CustomerCredential.builder().createdAt(LocalDateTime.now())
+				.passwordLastUpdated(LocalDateTime.now())
+				.hashedPassword(passwordEncoder.encode(customerRegisterDto.getPassword())).customer(customer).build();
 		customerCredentialRepository.save(credential);
-        
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(CustomerDto.of(customer));
 	}
 
@@ -72,27 +66,19 @@ public class CustomerServiceImpl implements ICustomerService {
 	public ResponseEntity<TokenResponseDto> loginCustomer(@Valid LoginRequestDto loginRequestDto) {
 		String email = loginRequestDto.getEmail();
 
-		Customer customer = customerRepository.findByEmail(email).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
-		customer.getCredential().setLastLogin(LocalDateTime.now());
-		
-		TokenResponseDto tokens = authService.authenticate(email, loginRequestDto.getPassword());
-		
-		return ResponseEntity.ok(tokens);
-	}
+		Customer customer = getUserByEmail(email).getBody();
 
-	@Override
-	public ResponseEntity<Customer> getUserByEmail(String name) {
-		Customer customer = customerRepository.findByEmail(name).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
-		return ResponseEntity.ok(customer);
+		customer.getCredential().setLastLogin(LocalDateTime.now());
+
+		TokenResponseDto tokens = authService.authenticate(email, loginRequestDto.getPassword());
+
+		return ResponseEntity.ok(tokens);
 	}
 
 	@Override
 	@Transactional
 	public ResponseEntity<String> removeCustomerById(UUID id) {
-		Customer customer = customerRepository.findById(id).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
+		Customer customer = getUserById(id).getBody();
 		customerRepository.delete(customer);
 
 		return ResponseEntity.ok(USER_DELETED_SUCCESSFULLY);
@@ -103,32 +89,45 @@ public class CustomerServiceImpl implements ICustomerService {
 	public ResponseEntity<CustomerDto> updateCustomer(UUID id, @Valid CustomerEditDto customerEditDto) {
 		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
-		customer.setFirstName(customerEditDto.getFirstName());
-		customer.setLastName(customerEditDto.getLastName());
-		log.info("Service.updateCustomer(). Name updated");
-		customer.setEmail(customerEditDto.getEmail());
-		log.info("Service.updateCustomer(). Email updated");
-		customer.setPhone(customerEditDto.getPhone());
-		log.info("Service.updateCustomer(). Phone updated");
-		return ResponseEntity.ok(CustomerDto.of(customer));
-	}
+		 if (customerEditDto.getFirstName() != null) {
+		        customer.setFirstName(customerEditDto.getFirstName());
+		        log.info("Service.updateCustomer(). First name updated");
+		    }
+		    
+		    if (customerEditDto.getLastName() != null) {
+		        customer.setLastName(customerEditDto.getLastName());
+		        log.info("Service.updateCustomer(). Last name updated");
+		    }
+
+		    if (customerEditDto.getEmail() != null) {
+		        customer.setEmail(customerEditDto.getEmail());
+		        log.info("Service.updateCustomer(). Email updated");
+		    }
+
+		    if (customerEditDto.getPhone() != null) {
+		        customer.setPhone(customerEditDto.getPhone());
+		        log.info("Service.updateCustomer(). Phone updated");
+		    }
+
+		    customerRepository.save(customer);
+
+		    return ResponseEntity.ok(CustomerDto.of(customer));
+		}
 
 	@Override
 	public ResponseEntity<String> logoutCustomer(UUID id, String token) {
-		Customer customer = customerRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
+		Customer customer = getUserById(id).getBody();
 		CustomerCredential credential = customerCredentialRepository.findByCustomer(customer);
 		token = token.substring(7);
 		revokedTokenService.addToBlackList(token);
 		credential.setRefreshToken("");
-		return ResponseEntity.ok("Logout successful");
+		return ResponseEntity.ok(LOGOUT_SUCCESS);
 	}
 
 	@Override
 	@Transactional
 	public ResponseEntity<TokenResponseDto> updatePassword(UUID id, @Valid ChangePasswordRequestDto changePasswordDto) {
-		Customer customer = customerRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
+		Customer customer = getUserById(id).getBody();
 		CustomerCredential credential = customerCredentialRepository.findByCustomer(customer);
 
 		String oldPw = credential.getHashedPassword();
@@ -142,6 +141,20 @@ public class CustomerServiceImpl implements ICustomerService {
 		TokenResponseDto tokens = authService.authenticate(customer.getEmail(), changePasswordDto.getNewPassword());
 
 		return ResponseEntity.ok(tokens);
+	}
+
+	@Override
+	public ResponseEntity<Customer> getUserByEmail(String name) {
+		Customer customer = customerRepository.findByEmail(name).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
+		return ResponseEntity.ok(customer);
+	}
+
+	@Override
+	public ResponseEntity<Customer> getUserById(UUID id) {
+		Customer customer = customerRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
+		return ResponseEntity.ok(customer);
 	}
 
 }
