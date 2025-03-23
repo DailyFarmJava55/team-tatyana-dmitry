@@ -58,7 +58,7 @@ public class CustomerController {
 	
 	@PostMapping(CUSTOMER_REFRESH_TOKEN )
     public ResponseEntity<RefreshTokenResponseDto> refreshAccessToken(@RequestHeader("x-refresh-token") String refreshToken) {
-        return authService.refreshAccessToken(refreshToken);
+        return authService.refreshCustomerAccessToken(refreshToken);
     }
 
 	@GetMapping(CUSTOMER_CURRENT)

@@ -117,4 +117,11 @@ public class JwtService {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
+	public boolean isTokenExpired(String token) {
+		Date expiration = extractExpiration(token);
+		boolean expired = expiration.before(new Date());
+		
+		return expired;
+	}
 }

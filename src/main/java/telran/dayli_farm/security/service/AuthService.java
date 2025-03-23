@@ -1,8 +1,9 @@
 package telran.dayli_farm.security.service;
-
+import static telran.dayli_farm.api.message.ErrorMessages.INVALID_TOKEN;
 import static telran.dayli_farm.api.message.ErrorMessages.WRONG_USER_NAME_OR_PASSWORD;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,9 +58,52 @@ public class AuthService {
 		}
 		throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
 	}
-	public ResponseEntity<RefreshTokenResponseDto> refreshAccessToken(String refreshToken) {
-		//TODO: Implement this method
-		return null;
-		
+	
+
+	public ResponseEntity<RefreshTokenResponseDto> refreshCustomerAccessToken(String refreshToken) {
+	    log.info("AuthService.refreshCustomerAccessToken - Refreshing access token for Customer: " + refreshToken);
+
+	    UUID id = jwtService.extractUserId(refreshToken);
+	    Optional<Customer> customerOptional = customerRepo.findById(id);
+	    CustomerCredential customerCredential = customerCredentialRepo.findByCustomer(new Customer(id));
+	    
+	    log.info("Customer exists: " + customerOptional.isPresent());
+	    log.info("Token matches: " + customerCredential.getRefreshToken().equals(refreshToken));
+	    log.info("Token expired: " + jwtService.isTokenExpired(refreshToken));
+	    
+	    if (customerOptional.isPresent() && 
+	        !customerCredential.getRefreshToken().isBlank() &&
+	        customerCredential.getRefreshToken().equals(refreshToken) && 
+	        !jwtService.isTokenExpired(refreshToken)) {
+
+	        String newAccessToken = jwtService.generateAccessToken(id.toString(), customerOptional.get().getEmail());
+	        return ResponseEntity.ok(new RefreshTokenResponseDto(newAccessToken));
+	    }
+	    
+	    throw new BadCredentialsException(INVALID_TOKEN);
 	}
+
+	// Refresh Token для Farmer
+//	public ResponseEntity<RefreshTokenResponseDto> refreshFarmerAccessToken(String refreshToken) {
+//	    log.info("AuthService.refreshFarmerAccessToken - Refreshing access token for Farmer: " + refreshToken);
+//
+//	    UUID id = UUID.fromString(jwtService.extractUserId(refreshToken));
+//	    Optional<Farmer> farmerOptional = farmerRepo.findByid(id);
+//	    FarmerCredential farmerCredential = credentialRepo.findByFarmer(new Farmer(id));
+//	    
+//	    log.info("Farmer exists: " + farmerOptional.isPresent());
+//	    log.info("Token matches: " + farmerCredential.getRefreshToken().equals(refreshToken));
+//	    log.info("Token expired: " + jwtService.isTokenExpired(refreshToken));
+//	    
+//	    if (farmerOptional.isPresent() && 
+//	        !farmerCredential.getRefreshToken().isBlank() &&
+//	        farmerCredential.getRefreshToken().equals(refreshToken) && 
+//	        !jwtService.isTokenExpired(refreshToken)) {
+//
+//	        String newAccessToken = jwtService.generateAccessToken(id.toString(), farmerOptional.get().getEmail());
+//	        return ResponseEntity.ok(new RefreshTokenResponseDto(newAccessToken));
+//	    }
+//	    
+//	    throw new BadCredentialsException(INVALID_TOKEN);
+//	}
 }
