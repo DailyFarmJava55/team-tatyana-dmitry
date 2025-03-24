@@ -38,4 +38,17 @@ public interface ApiConstants {
 	String CUSTOMER_REFRESH_TOKEN = "/customer/refresh";
 	String CUSTOMER_RESET_PASSWORD = "/customer/password-reset";
 	
+	//SURPRISE_BAG
+	String ADD_SURPRISE_BAG = "farmer/sb";
+	String GET_ALL_SURPRISE_BAGS = "/sb";
+	String GET_ALL_SURPRISE_BAGS_BY_FARMER = "farmer/sb";
+	String GET_ALL_SURPRISE_BAGS_BY_SIZE = "/sb/size";
+	String GET_ALL_SURPRISE_BAGS_BY_CATEGORY = "/sb/category";
+	
+	String GET_CATEGORIES = "/categories";
+	String GET_SIZES = "/sizes";
+	
+	//ORDER
+	String CREATE_ORDER = "/order";
+	
 }

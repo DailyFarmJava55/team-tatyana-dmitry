@@ -1,0 +1,14 @@
+package telran.dayli_farm.surprise_bag.model;
+
+public enum Category {
+	VEGETABLES_AND_FRUITS, 
+	MEAT_AND_POULTRY, 
+	EGGS,
+	BAKERY,
+	DAIRY, 
+	HONEY_AND_BEEKEEPING_PRODUCTS,
+	BEVERAGES,
+	FISH_AND_SEAFOOD,
+	OILS_AND_SPICES,
+	HERBS_AND_GREENS
+}
