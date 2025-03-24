@@ -30,6 +30,8 @@ public interface ErrorMessages {
 	String LATITUDE_REQUIRED ="Latitude is required";
 	String INVALID_LATITUDE = "Latitude must be between -90 and 90 degrees";
 	
+	String SURPRISE_BAG_NOT_FOUND = "Surprise Bag not found with id: ";
+	
 	
 
 }

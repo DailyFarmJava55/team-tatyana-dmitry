@@ -12,11 +12,11 @@ public interface ApiConstants {
 	String FARMER_CHANGE_PASSWORD = "/farmer/password";
 	String FARMER_CHANGE_EMAIL = "/farmer/email";
 	String FARMER_CHANGE_COMPANY_NAME = "/farmer/company";
-	String FARMER_CHANGE_ADDRESS = "/farmes/address";
+	String FARMER_CHANGE_ADDRESS = "/farmer/address";
 	String FARMER_CHANGE_COORDINATES = "/farmer/coordinates";
 	String FARMER_CHANGE_PHONE = "/farmer/phone";
 	
-	String FARMER_REMOVE = "/farmer/";
+	String FARMER_REMOVE = "/farmer/remove";
 	String FARMER_REFRESH_TOKEN = "/farmer/refresh";
 	String RESET_PASSWORD = "/farmer/password-reset";
 	
@@ -39,14 +39,16 @@ public interface ApiConstants {
 	String CUSTOMER_RESET_PASSWORD = "/customer/password-reset";
 	
 	//SURPRISE_BAG
-	String ADD_SURPRISE_BAG = "farmer/sb";
-	String GET_ALL_SURPRISE_BAGS = "/sb";
-	String GET_ALL_SURPRISE_BAGS_BY_FARMER = "farmer/sb";
-	String GET_ALL_SURPRISE_BAGS_BY_SIZE = "/sb/size";
-	String GET_ALL_SURPRISE_BAGS_BY_CATEGORY = "/sb/category";
-	
-	String GET_CATEGORIES = "/categories";
-	String GET_SIZES = "/sizes";
+    String ADD_SURPRISE_BAG = "/farmer/sb"; 
+    String GET_ALL_SURPRISE_BAGS = "/sb"; 
+    String UPDATE_SURPRISE_BAG = "/farmer/sb"; 
+    String GET_ALL_SURPRISE_BAGS_FOR_FARMER = "/farmer/sb"; 
+    String GET_ALL_SURPRISE_BAGS_BY_SIZE = "/sb/size";
+    String GET_ALL_SURPRISE_BAGS_BY_CATEGORY = "/sb/category";
+    String DELETE_SURPRISE_BAG = "/farmer/sb"; 
+
+    String GET_CATEGORIES = "/categories";
+    String GET_SIZES = "/sizes";
 	
 	//ORDER
 	String CREATE_ORDER = "/order";

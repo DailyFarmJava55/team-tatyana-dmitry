@@ -1,5 +1,12 @@
 package telran.dayli_farm.farmer.controller;
-import static telran.dayli_farm.api.ApiConstants.*;
+import static telran.dayli_farm.api.ApiConstants.FARMER_CHANGE_PASSWORD;
+import static telran.dayli_farm.api.ApiConstants.FARMER_CURRENT;
+import static telran.dayli_farm.api.ApiConstants.FARMER_EDIT;
+import static telran.dayli_farm.api.ApiConstants.FARMER_LOGIN;
+import static telran.dayli_farm.api.ApiConstants.FARMER_LOGOUT;
+import static telran.dayli_farm.api.ApiConstants.FARMER_REFRESH_TOKEN;
+import static telran.dayli_farm.api.ApiConstants.FARMER_REGISTER;
+import static telran.dayli_farm.api.ApiConstants.FARMER_REMOVE;
 
 import java.security.Principal;
 
@@ -21,11 +28,6 @@ import telran.dayli_farm.api.dto.ChangePasswordRequestDto;
 import telran.dayli_farm.api.dto.LoginRequestDto;
 import telran.dayli_farm.api.dto.token.RefreshTokenResponseDto;
 import telran.dayli_farm.api.dto.token.TokenResponseDto;
-import telran.dayli_farm.customer.dto.CustomerDto;
-import telran.dayli_farm.customer.dto.CustomerEditDto;
-import telran.dayli_farm.customer.dto.CustomerRegisterDto;
-import telran.dayli_farm.customer.entity.Customer;
-import telran.dayli_farm.customer.service.ICustomerService;
 import telran.dayli_farm.farmer.dto.FarmerDto;
 import telran.dayli_farm.farmer.dto.FarmerEditDto;
 import telran.dayli_farm.farmer.dto.FarmerRegisterDto;
