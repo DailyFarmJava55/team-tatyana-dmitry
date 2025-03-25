@@ -34,44 +34,41 @@ import telran.dayli_farm.farmer.entity.Farmer;
 import telran.dayli_farm.farmer.entity.FarmerCredential;
 import telran.dayli_farm.security.service.AuthService;
 import telran.dayli_farm.security.service.RevokedTokenService;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FarmerServiceImpl implements IFarmerService {
-	
+
 	private final FarmerRepository farmerRepository;
 	private final FarmerCredentialRepository farmerCredentialRepository;
 	private final CoordinatesRepository coordinatesRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthService authService;
-	//private final JwtService jwtService;
+	// private final JwtService jwtService;
 	private final RevokedTokenService revokedTokenService;
-	
+
 	@Override
 	@Transactional
 	public ResponseEntity<FarmerDto> registerFarmer(@Valid FarmerRegisterDto farmerRegisterDto) {
 		checkEmail(farmerRegisterDto.getEmail());
 		Farmer farmer = Farmer.of(farmerRegisterDto);
 		farmerRepository.save(farmer);
-		
+
 		if (farmerRegisterDto.getCoordinates() != null) {
-	        Coordinates coordinates = Coordinates.of(farmerRegisterDto.getCoordinates());
-	       coordinates.setFarmer(farmer);
-	       coordinatesRepository.save(coordinates);
-	       farmer.setCoordinates(coordinates);
-	    }
-		
-		FarmerCredential credential = FarmerCredential
-				.builder()
-				.createdAt(LocalDateTime.now())
+			Coordinates coordinates = Coordinates.of(farmerRegisterDto.getCoordinates());
+			coordinates.setFarmer(farmer);
+			coordinatesRepository.save(coordinates);
+			farmer.setCoordinates(coordinates);
+		}
+
+		FarmerCredential credential = FarmerCredential.builder().createdAt(LocalDateTime.now())
 				.passwordLastUpdated(LocalDateTime.now())
-				.hashedPassword(passwordEncoder.encode(farmerRegisterDto.getPassword()))
-				.farmer(farmer)
-				.build();
+				.hashedPassword(passwordEncoder.encode(farmerRegisterDto.getPassword())).farmer(farmer).build();
 		farmerCredentialRepository.save(credential);
 		return ResponseEntity.status(HttpStatus.CREATED).body(FarmerDto.of(farmer));
 	}
-	
+
 	private void checkEmail(String email) {
 		if (farmerRepository.existsByEmail(email)) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_EXISTS);
@@ -81,50 +78,53 @@ public class FarmerServiceImpl implements IFarmerService {
 	@Override
 	public ResponseEntity<TokenResponseDto> loginFarmer(@Valid LoginRequestDto loginRequestDto) {
 		String email = loginRequestDto.getEmail();
-		
-		Farmer farmer = getFarmerByEmail(email).getBody();
-		
-		farmer.getCredential().setLastLogin(LocalDateTime.now());
-		
-		TokenResponseDto tokens = authService.authenticate(email, loginRequestDto.getPassword());
-		
-		return ResponseEntity.ok(tokens);
-		}
+		String password = loginRequestDto.getPassword();
 
-	
+		TokenResponseDto tokens = authService.authenticate(email, password);
+
+		return ResponseEntity.ok(tokens);
+	}
 
 	@Override
 	@Transactional
 	public ResponseEntity<FarmerDto> updateFarmer(UUID id, @Valid FarmerEditDto farmerEditDto) {
 		Farmer farmer = farmerRepository.findByid(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, FARMER_NOT_FOUND));
-		
+
 		if (farmerEditDto.getFarmName() != null) {
-	        farmer.setFarmName(farmerEditDto.getFarmName());
-	        log.info("Service. FarmName updated");
+			farmer.setFarmName(farmerEditDto.getFarmName());
+			log.info("Service. FarmName updated");
+		}
+
+		if (farmerEditDto.getEmail() != null) {
+			farmer.setEmail(farmerEditDto.getEmail());
+			log.info("Service. Email updated");
+		}
+
+		if (farmerEditDto.getPhone() != null) {
+			farmer.setPhone(farmerEditDto.getPhone());
+			log.info("Service. Phone updated");
+		}
+
+		if (farmerEditDto.getCoordinates() != null) {
+	        Coordinates coordinates = farmer.getCoordinates();
+
+	        if (coordinates == null) {  
+	            coordinates = new Coordinates();
+	            coordinates.setFarmer(farmer);
+	        }
+
+	        coordinates.setLatitude(farmerEditDto.getCoordinates().getLatitude());
+	        coordinates.setLongitude(farmerEditDto.getCoordinates().getLongitude());
+
+	        coordinatesRepository.save(coordinates);  
+	        log.info("Service. Coordinates updated");
 	    }
 
-	    if (farmerEditDto.getEmail() != null) {
-	        farmer.setEmail(farmerEditDto.getEmail());
-	        log.info("Service. Email updated");
-	    }
-
-	    if (farmerEditDto.getPhone() != null) {
-	        farmer.setPhone(farmerEditDto.getPhone());
-	        log.info("Service. Phone updated");
-	    }
-	    
-	    if (farmerEditDto.getCoordinates() != null) {
-	        Coordinates coordinates = farmerEditDto.getCoordinates();
-	        log.info("coordinates updated successfully");
-	        
-	        coordinates.setFarmer(farmer); 
-	        farmer.setCoordinates(coordinates);
-	    }
-
-	    farmerRepository.save(farmer); 
-	    return ResponseEntity.ok(FarmerDto.of(farmer));
+		farmerRepository.save(farmer);
+		return ResponseEntity.ok(FarmerDto.of(farmer));
 	}
+
 	@Override
 	public ResponseEntity<TokenResponseDto> updatePassword(UUID id, @Valid ChangePasswordRequestDto changePasswordDto) {
 		Farmer farmer = getFarmerById(id).getBody();
@@ -159,13 +159,14 @@ public class FarmerServiceImpl implements IFarmerService {
 		credential.setRefreshToken("");
 		return ResponseEntity.ok(LOGOUT_SUCCESS);
 	}
+
 	@Override
 	public ResponseEntity<Farmer> getFarmerByEmail(String name) {
 		Farmer farmer = farmerRepository.findByEmail(name).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
 		return ResponseEntity.ok(farmer);
 	}
-	
+
 	@Override
 	public ResponseEntity<Farmer> getFarmerById(UUID id) {
 		Farmer farmer = farmerRepository.findById(id)

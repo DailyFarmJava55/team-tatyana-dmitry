@@ -21,18 +21,19 @@ import telran.dayli_farm.farmer.entity.Farmer;
 import telran.dayli_farm.farmer.entity.FarmerCredential;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
+
 	private final CustomerRepository customerRepo;
 	private final CustomerCredentialRepository customerCredentialRepo;
-	
 	private final FarmerRepository farmerRepo;
 	private final FarmerCredentialRepository farmerCredentialRepo;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Optional<Customer> customerOptional = customerRepo.findByEmail(email);
+
 		if (customerOptional.isPresent()) {
 			Customer customer = customerOptional.get();
 			CustomerCredential customerCredential = customerCredentialRepo.findByCustomer(customer);
@@ -40,13 +41,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			return new CustomUserDetailService(customer.getEmail(), customerCredential.getHashedPassword(),
 					List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")), customer.getId());
 		}
+
 		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
+
 		if (farmerOptional.isPresent()) {
 			Farmer farmer = farmerOptional.get();
-			FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
-			return new CustomUserDetailService(farmer.getEmail(), credential.getHashedPassword(),
+			FarmerCredential farmerCredential = farmerCredentialRepo.findByFarmer(farmer);
+
+			return new CustomUserDetailService(farmer.getEmail(), farmerCredential.getHashedPassword(),
 					List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
 		}
+
 		throw new UsernameNotFoundException("User not found");
 	}
 }

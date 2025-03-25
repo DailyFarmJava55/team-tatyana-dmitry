@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import lombok.Getter;
-
+@Getter
 public class CustomUserDetailService extends User {
 
 	private static final long serialVersionUID = 6939266392492741393L;

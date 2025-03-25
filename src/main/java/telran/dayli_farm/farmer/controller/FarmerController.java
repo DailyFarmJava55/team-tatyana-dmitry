@@ -64,13 +64,13 @@ public class FarmerController {
 	}
 	
 	@PutMapping(FARMER_EDIT)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole(FARMER)")
     public ResponseEntity<FarmerDto> updateFarmer(@Valid @RequestBody FarmerEditDto farmerEditDto,@AuthenticationPrincipal CustomUserDetailService user) {
         return farmerService.updateFarmer(user.getId(), farmerEditDto);
     }
 	
 	@PutMapping(FARMER_CHANGE_PASSWORD)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole(FARMER)")
     public ResponseEntity<TokenResponseDto> farmerUpdatePassword(
             @Valid @RequestBody ChangePasswordRequestDto changePasswordDto,
             @AuthenticationPrincipal CustomUserDetailService user) {
@@ -78,7 +78,7 @@ public class FarmerController {
     }
 
 	@DeleteMapping(FARMER_REMOVE)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole(FARMER)")
     public ResponseEntity<String> removeFarmer(@AuthenticationPrincipal CustomUserDetailService user) {
         return farmerService.removeFarmerById(user.getId());
     }

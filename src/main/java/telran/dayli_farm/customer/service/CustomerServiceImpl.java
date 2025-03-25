@@ -1,7 +1,11 @@
 package telran.dayli_farm.customer.service;
 
-import static telran.dayli_farm.api.message.ErrorMessages.*;
-import static telran.dayli_farm.api.message.SuccessMessages.*;
+import static telran.dayli_farm.api.message.ErrorMessages.CUSTOMER_WITH_THIS_EMAIL_EXISTS;
+import static telran.dayli_farm.api.message.ErrorMessages.CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS;
+import static telran.dayli_farm.api.message.ErrorMessages.OLD_PASSWORD_IS_NOT_CORECT;
+import static telran.dayli_farm.api.message.ErrorMessages.USER_NOT_FOUND;
+import static telran.dayli_farm.api.message.SuccessMessages.LOGOUT_SUCCESS;
+import static telran.dayli_farm.api.message.SuccessMessages.USER_DELETED_SUCCESSFULLY;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -65,12 +69,9 @@ public class CustomerServiceImpl implements ICustomerService {
 	@Override
 	public ResponseEntity<TokenResponseDto> loginCustomer(@Valid LoginRequestDto loginRequestDto) {
 		String email = loginRequestDto.getEmail();
+		String password = loginRequestDto.getPassword();
 
-		Customer customer = getUserByEmail(email).getBody();
-
-		customer.getCredential().setLastLogin(LocalDateTime.now());
-
-		TokenResponseDto tokens = authService.authenticate(email, loginRequestDto.getPassword());
+		TokenResponseDto tokens = authService.authenticate(email, password);
 
 		return ResponseEntity.ok(tokens);
 	}
@@ -89,30 +90,30 @@ public class CustomerServiceImpl implements ICustomerService {
 	public ResponseEntity<CustomerDto> updateCustomer(UUID id, @Valid CustomerEditDto customerEditDto) {
 		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
-		 if (customerEditDto.getFirstName() != null) {
-		        customer.setFirstName(customerEditDto.getFirstName());
-		        log.info("Service.updateCustomer(). First name updated");
-		    }
-		    
-		    if (customerEditDto.getLastName() != null) {
-		        customer.setLastName(customerEditDto.getLastName());
-		        log.info("Service.updateCustomer(). Last name updated");
-		    }
-
-		    if (customerEditDto.getEmail() != null) {
-		        customer.setEmail(customerEditDto.getEmail());
-		        log.info("Service.updateCustomer(). Email updated");
-		    }
-
-		    if (customerEditDto.getPhone() != null) {
-		        customer.setPhone(customerEditDto.getPhone());
-		        log.info("Service.updateCustomer(). Phone updated");
-		    }
-
-		    customerRepository.save(customer);
-
-		    return ResponseEntity.ok(CustomerDto.of(customer));
+		if (customerEditDto.getFirstName() != null) {
+			customer.setFirstName(customerEditDto.getFirstName());
+			log.info("Service.updateCustomer(). First name updated");
 		}
+
+		if (customerEditDto.getLastName() != null) {
+			customer.setLastName(customerEditDto.getLastName());
+			log.info("Service.updateCustomer(). Last name updated");
+		}
+
+		if (customerEditDto.getEmail() != null) {
+			customer.setEmail(customerEditDto.getEmail());
+			log.info("Service.updateCustomer(). Email updated");
+		}
+
+		if (customerEditDto.getPhone() != null) {
+			customer.setPhone(customerEditDto.getPhone());
+			log.info("Service.updateCustomer(). Phone updated");
+		}
+
+		customerRepository.save(customer);
+
+		return ResponseEntity.ok(CustomerDto.of(customer));
+	}
 
 	@Override
 	public ResponseEntity<String> logoutCustomer(UUID id, String token) {

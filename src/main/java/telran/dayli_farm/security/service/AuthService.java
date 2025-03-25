@@ -1,8 +1,8 @@
 package telran.dayli_farm.security.service;
 
 import static telran.dayli_farm.api.message.ErrorMessages.INVALID_TOKEN;
-import static telran.dayli_farm.api.message.ErrorMessages.WRONG_USER_NAME_OR_PASSWORD;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,7 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import telran.dayli_farm.farmer.dao.FarmerCredentialRepository;
 import telran.dayli_farm.farmer.dao.FarmerRepository;
 import telran.dayli_farm.farmer.entity.Farmer;
 import telran.dayli_farm.farmer.entity.FarmerCredential;
+import telran.dayli_farm.security.CustomUserDetailService;
 import telran.dayli_farm.security.JwtService;
 
 @Service
@@ -36,58 +38,40 @@ public class AuthService {
 	private final FarmerRepository farmerRepo;
 	private final FarmerCredentialRepository farmerCredentialRepo;
 	private final JwtService jwtService;
-	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 
 	public TokenResponseDto authenticate(String email, String password) {
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-		Optional<Customer> customerOpt = customerRepo.findByEmail(email);
-		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
+		CustomUserDetailService userDetails = (CustomUserDetailService) authentication.getPrincipal();
+		UUID userId = userDetails.getId();
 
-		if (farmerOptional.isPresent()) {
-			Farmer farmer = farmerOptional.get();
-			FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
-			log.info("Authenticate. Farmer " + farmer.getEmail() + " exists");
+		String accessToken = jwtService.generateAccessToken(userId, email);
+		String refreshToken = jwtService.generateRefreshToken(userId, email);
 
-			log.info("Authenticate. passwordEncoder.matches"
-					+ passwordEncoder.matches(password, credential.getHashedPassword()));
-			if (passwordEncoder.matches(password, credential.getHashedPassword())) {
-				log.info("Authenticate. Password is valid");
-				String uuid = farmer.getId().toString();
+		LocalDateTime now = LocalDateTime.now();
 
-				String accessToken = jwtService.generateAccessToken(uuid, email);
-				log.info("access token - " + accessToken);
-				String refreshToken = jwtService.generateRefreshToken(uuid, email);
-				log.info("refresh token - " + refreshToken);
+		Optional<CustomerCredential> customerOpt = customerCredentialRepo.findByCustomerEmail(email);
+		if (customerOpt.isPresent()) {
+			CustomerCredential customerCredential = customerOpt.get();
+			customerCredential.setRefreshToken(refreshToken);
+			customerCredential.setLastLogin(now);
+			customerCredentialRepo.save(customerCredential);
 
-				credential.setRefreshToken(refreshToken);
-				farmerCredentialRepo.save(credential);
-				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-				log.info("login success!!! ");
-				return new TokenResponseDto(accessToken, refreshToken);
-			}
-		} else if (customerOpt.isPresent()) {
-			Customer customer = customerOpt.get();
-			CustomerCredential customerCredential = customerCredentialRepo.findByCustomer(customer);
-
-			log.info("Authenticate. Customer " + customer.getEmail() + " exists");
-			log.info("Authenticate. passwordEncoder.matches"
-					+ passwordEncoder.matches(password, customerCredential.getHashedPassword()));
-
-			if (passwordEncoder.matches(password, customerCredential.getHashedPassword())) {
-				log.info("Authenticate. Password is valid");
-				String uuid = customer.getId().toString();
-				String accessToken = jwtService.generateAccessToken(uuid, email);
-				String refreshToken = jwtService.generateRefreshToken(uuid, email);
-
-				customerCredential.setRefreshToken(refreshToken);
-				customerCredentialRepo.save(customerCredential);
-
-				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-				return new TokenResponseDto(accessToken, refreshToken);
-			}
+			return new TokenResponseDto(accessToken, refreshToken);
 		}
-		throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
+
+		Optional<FarmerCredential> farmerOpt = farmerCredentialRepo.findByFarmerEmail(email);
+		if (farmerOpt.isPresent()) {
+			FarmerCredential farmerCredential = farmerOpt.get();
+			farmerCredential.setRefreshToken(refreshToken);
+			farmerCredential.setLastLogin(now);
+			farmerCredentialRepo.save(farmerCredential);
+
+			return new TokenResponseDto(accessToken, refreshToken);
+		}
+		throw new UsernameNotFoundException("User not found with email: " + email);
 	}
 
 	public ResponseEntity<RefreshTokenResponseDto> refreshCustomerAccessToken(String refreshToken) {
@@ -105,7 +89,7 @@ public class AuthService {
 				&& customerCredential.getRefreshToken().equals(refreshToken)
 				&& !jwtService.isTokenExpired(refreshToken)) {
 
-			String newAccessToken = jwtService.generateAccessToken(id.toString(), customerOptional.get().getEmail());
+			String newAccessToken = jwtService.generateAccessToken(id, customerOptional.get().getEmail());
 			return ResponseEntity.ok(new RefreshTokenResponseDto(newAccessToken));
 		}
 
@@ -127,7 +111,7 @@ public class AuthService {
 				&& farmerCredential.getRefreshToken().equals(refreshToken)
 				&& !jwtService.isTokenExpired(refreshToken)) {
 
-			String newAccessToken = jwtService.generateAccessToken(id.toString(), farmerOptional.get().getEmail());
+			String newAccessToken = jwtService.generateAccessToken(id, farmerOptional.get().getEmail());
 			return ResponseEntity.ok(new RefreshTokenResponseDto(newAccessToken));
 		}
 
