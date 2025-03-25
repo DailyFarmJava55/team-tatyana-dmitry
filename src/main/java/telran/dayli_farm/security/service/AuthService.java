@@ -26,7 +26,7 @@ import telran.dayli_farm.farmer.dao.FarmerCredentialRepository;
 import telran.dayli_farm.farmer.dao.FarmerRepository;
 import telran.dayli_farm.farmer.entity.Farmer;
 import telran.dayli_farm.farmer.entity.FarmerCredential;
-import telran.dayli_farm.security.CustomUserDetailService;
+import telran.dayli_farm.security.CustomUserDetails;
 import telran.dayli_farm.security.JwtService;
 
 @Service
@@ -44,7 +44,7 @@ public class AuthService {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-		CustomUserDetailService userDetails = (CustomUserDetailService) authentication.getPrincipal();
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 		UUID userId = userDetails.getId();
 
 		String accessToken = jwtService.generateAccessToken(userId, email);

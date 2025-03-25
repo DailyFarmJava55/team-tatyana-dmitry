@@ -38,7 +38,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			Customer customer = customerOptional.get();
 			CustomerCredential customerCredential = customerCredentialRepo.findByCustomer(customer);
 
-			return new CustomUserDetailService(customer.getEmail(), customerCredential.getHashedPassword(),
+			return new CustomUserDetails(customer.getEmail(), customerCredential.getHashedPassword(),
 					List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")), customer.getId());
 		}
 
@@ -48,7 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			Farmer farmer = farmerOptional.get();
 			FarmerCredential farmerCredential = farmerCredentialRepo.findByFarmer(farmer);
 
-			return new CustomUserDetailService(farmer.getEmail(), farmerCredential.getHashedPassword(),
+			return new CustomUserDetails(farmer.getEmail(), farmerCredential.getHashedPassword(),
 					List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
 		}
 

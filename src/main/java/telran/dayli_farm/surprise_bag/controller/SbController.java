@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.dayli_farm.security.CustomUserDetailService;
+import telran.dayli_farm.security.CustomUserDetails;
 import telran.dayli_farm.surprise_bag.dto.SurprisebagDto;
 import telran.dayli_farm.surprise_bag.dto.SurprisebagEditDto;
 import telran.dayli_farm.surprise_bag.dto.SurprisebagResponseDto;
@@ -37,7 +37,7 @@ public class SbController {
 	@PostMapping(ADD_SURPRISE_BAG)
 	@PreAuthorize("hasRole('FARMER')")
 	public ResponseEntity<SurprisebagResponseDto> addSurpriseBag(@Valid @RequestBody SurprisebagDto surpriseBagDto,
-			@AuthenticationPrincipal CustomUserDetailService user) {
+			@AuthenticationPrincipal CustomUserDetails user) {
 		UUID farmerId = user.getId();
 		return sbService.addSurpriseBag(farmerId, surpriseBagDto);
 	}
@@ -47,7 +47,7 @@ public class SbController {
 	public ResponseEntity<SurprisebagResponseDto> updateSurpriseBag(
 	        @PathVariable UUID bagId,
 	        @Valid @RequestBody SurprisebagEditDto surpriseBagEditDto,
-	        @AuthenticationPrincipal CustomUserDetailService user) {
+	        @AuthenticationPrincipal CustomUserDetails user) {
 	    UUID farmerId = user.getId();
 	    return sbService.updateSurpriseBag(farmerId, bagId, surpriseBagEditDto);
 	}
@@ -55,7 +55,7 @@ public class SbController {
 	@GetMapping(GET_ALL_SURPRISE_BAGS_FOR_FARMER)
 	@PreAuthorize("hasRole(ROLE_FARMER) ")
 	public ResponseEntity<List<SurprisebagResponseDto>> getAvailableSurpriseBagForFarmer(
-			@AuthenticationPrincipal CustomUserDetailService user,
+			@AuthenticationPrincipal CustomUserDetails user,
 			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
 		return sbService.getAvailableSurpriseBagForFarmer(user.getId());
 	}

@@ -33,7 +33,7 @@ import telran.dayli_farm.farmer.dto.FarmerEditDto;
 import telran.dayli_farm.farmer.dto.FarmerRegisterDto;
 import telran.dayli_farm.farmer.entity.Farmer;
 import telran.dayli_farm.farmer.service.IFarmerService;
-import telran.dayli_farm.security.CustomUserDetailService;
+import telran.dayli_farm.security.CustomUserDetails;
 import telran.dayli_farm.security.service.AuthService;
 
 @Tag(name = "Farmer API", description = "Methods for farmer")
@@ -65,7 +65,7 @@ public class FarmerController {
 	
 	@PutMapping(FARMER_EDIT)
     @PreAuthorize("hasRole(FARMER)")
-    public ResponseEntity<FarmerDto> updateFarmer(@Valid @RequestBody FarmerEditDto farmerEditDto,@AuthenticationPrincipal CustomUserDetailService user) {
+    public ResponseEntity<FarmerDto> updateFarmer(@Valid @RequestBody FarmerEditDto farmerEditDto,@AuthenticationPrincipal CustomUserDetails user) {
         return farmerService.updateFarmer(user.getId(), farmerEditDto);
     }
 	
@@ -73,18 +73,18 @@ public class FarmerController {
     @PreAuthorize("hasRole(FARMER)")
     public ResponseEntity<TokenResponseDto> farmerUpdatePassword(
             @Valid @RequestBody ChangePasswordRequestDto changePasswordDto,
-            @AuthenticationPrincipal CustomUserDetailService user) {
+            @AuthenticationPrincipal CustomUserDetails user) {
         return farmerService.updatePassword(user.getId(), changePasswordDto);
     }
 
 	@DeleteMapping(FARMER_REMOVE)
     @PreAuthorize("hasRole(FARMER)")
-    public ResponseEntity<String> removeFarmer(@AuthenticationPrincipal CustomUserDetailService user) {
+    public ResponseEntity<String> removeFarmer(@AuthenticationPrincipal CustomUserDetails user) {
         return farmerService.removeFarmerById(user.getId());
     }
 	
 	@DeleteMapping(FARMER_LOGOUT)
-    public ResponseEntity<String> logoutFarmer(@AuthenticationPrincipal CustomUserDetailService user, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> logoutFarmer(@AuthenticationPrincipal CustomUserDetails user, @RequestHeader("Authorization") String token) {
         return farmerService.logoutFarmer(user.getId(), token);
     }
 }

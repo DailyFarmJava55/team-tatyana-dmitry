@@ -34,7 +34,7 @@ import telran.dayli_farm.customer.dto.CustomerEditDto;
 import telran.dayli_farm.customer.dto.CustomerRegisterDto;
 import telran.dayli_farm.customer.entity.Customer;
 import telran.dayli_farm.customer.service.ICustomerService;
-import telran.dayli_farm.security.CustomUserDetailService;
+import telran.dayli_farm.security.CustomUserDetails;
 import telran.dayli_farm.security.service.AuthService;
 
 @Tag(name = "Customer API", description = "Methods for customers")
@@ -68,7 +68,7 @@ public class CustomerController {
 	
 	@PutMapping(CUSTOMER_EDIT)
     @PreAuthorize("hasRole(CUSTOMER)")
-    public ResponseEntity<CustomerDto> updateCustomer(@Valid @RequestBody CustomerEditDto customerEditDto,@AuthenticationPrincipal CustomUserDetailService user) {
+    public ResponseEntity<CustomerDto> updateCustomer(@Valid @RequestBody CustomerEditDto customerEditDto,@AuthenticationPrincipal CustomUserDetails user) {
         return customerService.updateCustomer(user.getId(), customerEditDto);
     }
 	
@@ -76,18 +76,18 @@ public class CustomerController {
     @PreAuthorize("hasRole(CUSTOMER)")
     public ResponseEntity<TokenResponseDto> customerUpdatePassword(
             @Valid @RequestBody ChangePasswordRequestDto changePasswordDto,
-            @AuthenticationPrincipal CustomUserDetailService user) {
+            @AuthenticationPrincipal CustomUserDetails user) {
         return customerService.updatePassword(user.getId(), changePasswordDto);
     }
 
 	@DeleteMapping(CUSTOMER_REMOVE)
     @PreAuthorize("hasRole(CUSTOMER)")
-    public ResponseEntity<String> removeCustomer(@AuthenticationPrincipal CustomUserDetailService user) {
+    public ResponseEntity<String> removeCustomer(@AuthenticationPrincipal CustomUserDetails user) {
         return customerService.removeCustomerById(user.getId());
     }
 	
 	@DeleteMapping(CUSTOMER_LOGOUT)
-    public ResponseEntity<String> logoutCustomer(@AuthenticationPrincipal CustomUserDetailService user, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> logoutCustomer(@AuthenticationPrincipal CustomUserDetails user, @RequestHeader("Authorization") String token) {
         return customerService.logoutCustomer(user.getId(), token);
     }
 
