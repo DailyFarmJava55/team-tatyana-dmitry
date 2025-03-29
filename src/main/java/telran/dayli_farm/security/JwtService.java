@@ -33,8 +33,11 @@ public class JwtService {
 		return key;
 	}
 
-	public String generateAccessToken(UUID userId, String email) {
-		String token = Jwts.builder().setSubject(email).claim("userId", userId.toString())
+	public String generateAccessToken(UUID userId, String email, String role) {
+		String token = Jwts.builder()
+				.setSubject(email)
+				.claim("userId", userId.toString())
+				.claim("role", role)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + accessExpirationSec * 1000))
 				.signWith(getSigningKey()).compact();
@@ -82,6 +85,18 @@ public class JwtService {
 			throw e;
 		}
 	}
+	
+	public String extractRole(String token) {
+		try {
+			Claims claims = extractAllClaims(token);
+			return claims.get("role", String.class);
+		} catch (JwtException e) {
+			log.error("Failed to extract role from token: {}", e.getMessage());
+			throw e;
+		
+	        }
+	}
+	
 
 	public Claims extractAllClaims(String token) {
 		try {

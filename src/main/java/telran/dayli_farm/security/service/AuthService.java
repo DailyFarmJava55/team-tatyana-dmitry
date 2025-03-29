@@ -32,6 +32,7 @@ import telran.dayli_farm.security.JwtService;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+
 public class AuthService {
 	private final CustomerRepository customerRepo;
 	private final CustomerCredentialRepository customerCredentialRepo;
@@ -46,15 +47,14 @@ public class AuthService {
 
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 		UUID userId = userDetails.getId();
-
-		String accessToken = jwtService.generateAccessToken(userId, email);
-		String refreshToken = jwtService.generateRefreshToken(userId, email);
-
 		LocalDateTime now = LocalDateTime.now();
 
 		Optional<CustomerCredential> customerOpt = customerCredentialRepo.findByCustomerEmail(email);
 		if (customerOpt.isPresent()) {
 			CustomerCredential customerCredential = customerOpt.get();
+			String refreshToken = jwtService.generateRefreshToken(userId, email);
+			String accessToken = jwtService.generateAccessToken(userId, email, "CUSTOMER");
+
 			customerCredential.setRefreshToken(refreshToken);
 			customerCredential.setLastLogin(now);
 			customerCredentialRepo.save(customerCredential);
@@ -65,12 +65,16 @@ public class AuthService {
 		Optional<FarmerCredential> farmerOpt = farmerCredentialRepo.findByFarmerEmail(email);
 		if (farmerOpt.isPresent()) {
 			FarmerCredential farmerCredential = farmerOpt.get();
+			String refreshToken = jwtService.generateRefreshToken(userId, email);
+			String accessToken = jwtService.generateAccessToken(userId, email, "FARMER");
+
 			farmerCredential.setRefreshToken(refreshToken);
 			farmerCredential.setLastLogin(now);
 			farmerCredentialRepo.save(farmerCredential);
 
 			return new TokenResponseDto(accessToken, refreshToken);
 		}
+
 		throw new UsernameNotFoundException("User not found with email: " + email);
 	}
 
@@ -81,15 +85,10 @@ public class AuthService {
 		Optional<Customer> customerOptional = customerRepo.findById(id);
 		CustomerCredential customerCredential = customerCredentialRepo.findByCustomer(new Customer(id));
 
-		log.info("Customer exists: " + customerOptional.isPresent());
-		log.info("Token matches: " + customerCredential.getRefreshToken().equals(refreshToken));
-		log.info("Token expired: " + jwtService.isTokenExpired(refreshToken));
-
-		if (customerOptional.isPresent() && !customerCredential.getRefreshToken().isBlank()
-				&& customerCredential.getRefreshToken().equals(refreshToken)
+		if (customerOptional.isPresent() && customerCredential.getRefreshToken().equals(refreshToken)
 				&& !jwtService.isTokenExpired(refreshToken)) {
 
-			String newAccessToken = jwtService.generateAccessToken(id, customerOptional.get().getEmail());
+			String newAccessToken = jwtService.generateAccessToken(id, customerOptional.get().getEmail(), "CUSTOMER");
 			return ResponseEntity.ok(new RefreshTokenResponseDto(newAccessToken));
 		}
 
@@ -103,15 +102,10 @@ public class AuthService {
 		Optional<Farmer> farmerOptional = farmerRepo.findByid(id);
 		FarmerCredential farmerCredential = farmerCredentialRepo.findByFarmer(new Farmer(id));
 
-		log.info("Farmer exists: " + farmerOptional.isPresent());
-		log.info("Token matches: " + farmerCredential.getRefreshToken().equals(refreshToken));
-		log.info("Token expired: " + jwtService.isTokenExpired(refreshToken));
-
-		if (farmerOptional.isPresent() && !farmerCredential.getRefreshToken().isBlank()
-				&& farmerCredential.getRefreshToken().equals(refreshToken)
+		if (farmerOptional.isPresent() && farmerCredential.getRefreshToken().equals(refreshToken)
 				&& !jwtService.isTokenExpired(refreshToken)) {
 
-			String newAccessToken = jwtService.generateAccessToken(id, farmerOptional.get().getEmail());
+			String newAccessToken = jwtService.generateAccessToken(id, farmerOptional.get().getEmail(), "FARMER");
 			return ResponseEntity.ok(new RefreshTokenResponseDto(newAccessToken));
 		}
 

@@ -1,8 +1,13 @@
 package telran.dayli_farm.security;
 
+import static telran.dayli_farm.api.ApiConstants.*;
+
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,6 +32,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
+		String requestURI = request.getRequestURI();
+		log.info("OncePerRequestFilter. requestURI" + requestURI);
+		if (requestURI.equals(FARMER_REFRESH_TOKEN) 
+				
+				|| requestURI.equals(RESET_PASSWORD)
+				|| requestURI.equals(FARMER_REGISTER)
+				||requestURI.equals(FARMER_REFRESH_TOKEN)
+				|| requestURI.equals(CUSTOMER_REFRESH_TOKEN)
+				|| requestURI.equals(CUSTOMER_REGISTER)
+				|| requestURI.equals(CUSTOMER_LOGIN)
+				|| requestURI.equals(CUSTOMER_REGISTER)
+				|| requestURI.equals(CUSTOMER_LOGIN)
+				|| requestURI.startsWith("/paypal")
+				|| requestURI.equals("/swagger-ui.html") 
+				|| requestURI.startsWith("/swagger") 
+				|| requestURI.startsWith("/v3")) {
+			log.info("OncePerRequestFilter. Request does not need token");
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
 		String token = getTokenFromRequest(request);
 
 		if (token == null || revokedTokenService.isRevorkedToken(token) || !jwtService.validateToken(token)) {
@@ -35,13 +61,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		}
 
 		String email = jwtService.extractEmail(token);
+		String role = jwtService.extractRole(token);
 
+		        
 		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
 			if (jwtService.validateToken(token)) {
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-						null, userDetails.getAuthorities());
+				Collection<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+						userDetails, null, authorities);
 
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}

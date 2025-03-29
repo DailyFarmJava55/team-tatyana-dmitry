@@ -1,5 +1,7 @@
 package telran.dayli_farm.security;
 
+import static telran.dayli_farm.api.ApiConstants.*;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,30 +24,37 @@ public class SecurityConfig {
 	private final JwtService jwtService;
 	private final UserDetailsService userDetailsService;
 	private final RevokedTokenService revokedTokenService;
-	
-	  @Bean
-	    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	        http.csrf(csrf -> csrf.disable())
-	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-	            .authorizeHttpRequests(authorize -> authorize
-	                    .requestMatchers("/swagger-ui/**", "/v3/**").permitAll()
-	                    .anyRequest().permitAll())
-	            .addFilterBefore(new JwtAuthFilter(jwtService, userDetailsService, revokedTokenService), 
-	                             UsernamePasswordAuthenticationFilter.class);
 
-	        return http.build();
-	    }
-	
 	@Bean
-    AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService((UserDetailsService) userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(provider);
-    }
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(authorize -> authorize
+						// .requestMatchers("/swagger-ui/**", "/v3/**").permitAll()
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+						.requestMatchers(FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN,
+								CUSTOMER_REGISTER, CUSTOMER_LOGIN, CUSTOMER_REFRESH_TOKEN, GET_ALL_SURPRISE_BAGS,
+								"/swagger-ui/**", "/v3/**").permitAll()
+						.requestMatchers("/farmer/**").hasRole("FARMER")
+						.requestMatchers("/customer/**").hasRole("CUSTOMER")
+						.anyRequest().authenticated())
+						
+				.addFilterBefore(new JwtAuthFilter(jwtService, userDetailsService, revokedTokenService),
+						UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
+
+	@Bean
+	AuthenticationManager authenticationManager() {
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService((UserDetailsService) userDetailsService);
+		provider.setPasswordEncoder(passwordEncoder());
+		return new ProviderManager(provider);
+	}
+
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }

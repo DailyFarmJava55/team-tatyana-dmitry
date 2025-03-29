@@ -67,13 +67,13 @@ public class CustomerController {
 	}
 	
 	@PutMapping(CUSTOMER_EDIT)
-    @PreAuthorize("hasRole(CUSTOMER)")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CustomerDto> updateCustomer(@Valid @RequestBody CustomerEditDto customerEditDto,@AuthenticationPrincipal CustomUserDetails user) {
         return customerService.updateCustomer(user.getId(), customerEditDto);
     }
 	
 	@PutMapping(CUSTOMER_CHANGE_PASSWORD)
-    @PreAuthorize("hasRole(CUSTOMER)")
+	@PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<TokenResponseDto> customerUpdatePassword(
             @Valid @RequestBody ChangePasswordRequestDto changePasswordDto,
             @AuthenticationPrincipal CustomUserDetails user) {
@@ -81,12 +81,13 @@ public class CustomerController {
     }
 
 	@DeleteMapping(CUSTOMER_REMOVE)
-    @PreAuthorize("hasRole(CUSTOMER)")
+	@PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> removeCustomer(@AuthenticationPrincipal CustomUserDetails user) {
         return customerService.removeCustomerById(user.getId());
     }
 	
 	@DeleteMapping(CUSTOMER_LOGOUT)
+	@PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> logoutCustomer(@AuthenticationPrincipal CustomUserDetails user, @RequestHeader("Authorization") String token) {
         return customerService.logoutCustomer(user.getId(), token);
     }

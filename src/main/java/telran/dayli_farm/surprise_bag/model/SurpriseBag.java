@@ -10,6 +10,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -59,17 +60,17 @@ public class SurpriseBag {
 	@JoinColumn(name = "farmer_id", nullable = false)
 	Farmer farmer;
 
-	@ElementCollection(targetClass = Size.class)
+	@ElementCollection(fetch = FetchType.LAZY, targetClass = Size.class)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "surprise_bag_sizes", joinColumns = @JoinColumn(name = "surprise_bag_id"))
 	@Column(name = "size", nullable = false)
-	List<Size> size;
+	private List<Size> size;
 
-	@ElementCollection(targetClass = Category.class)
+	@ElementCollection(fetch = FetchType.LAZY, targetClass = Category.class)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "surprise_bag_categories", joinColumns = @JoinColumn(name = "surprise_bag_id"))
 	@Column(name = "category", nullable = false)
-	List<Category> category;
+	private List<Category> category;
 
 	public SurpriseBag(UUID id) {
 		this.id = id;

@@ -66,8 +66,11 @@ public class SbServiceImpl implements ISbService {
 
 	@Override
 	public ResponseEntity<List<SurprisebagResponseDto>> getAllSurpriseBags() {
-		List<SurprisebagResponseDto> surpriseBags = sbRepository.findAllSurpriseBags();
-		return ResponseEntity.ok(surpriseBags);
+		List<SurpriseBag> surpriseBags = sbRepository.findAllSurpriseBags();
+		 List<SurprisebagResponseDto> response = surpriseBags.stream()
+		            .map(SurprisebagResponseDto::of)
+		            .toList();
+		return ResponseEntity.ok(response);
 	}
 
 	@Override

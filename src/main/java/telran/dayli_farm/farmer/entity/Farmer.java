@@ -8,6 +8,7 @@ import org.hibernate.annotations.UuidGenerator;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -45,14 +46,14 @@ public class Farmer {
 	@Column(nullable = false)
     private String phone;
 	
-	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	    private Coordinates coordinates;
 	
-	@OneToOne(mappedBy = "farmer", cascade = jakarta.persistence.CascadeType.REMOVE)
+	@OneToOne(mappedBy = "farmer", cascade = jakarta.persistence.CascadeType.REMOVE, fetch = FetchType.LAZY)
     private FarmerCredential credential;
 	
-	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
-	List<SurpriseBag> surpriseBags;
+	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	 private List<SurpriseBag> surpriseBags;
 	
 	public Farmer(UUID id) { 
         this.id = id;

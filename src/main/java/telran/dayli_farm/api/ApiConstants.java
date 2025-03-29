@@ -8,7 +8,7 @@ public interface ApiConstants {
 	String FARMER_LOGOUT = "/farmer/logout";
 	String FARMER_CURRENT = "/farmer/profile";
 	
-	String FARMER_EDIT = "/farmer/";
+	String FARMER_EDIT = "/farmer/edit";
 	String FARMER_CHANGE_PASSWORD = "/farmer/password";
 	String FARMER_CHANGE_EMAIL = "/farmer/email";
 	String FARMER_CHANGE_COMPANY_NAME = "/farmer/company";
@@ -28,7 +28,7 @@ public interface ApiConstants {
 	String CUSTOMER_LOGOUT = "/customer/logout";
 	String CUSTOMER_CURRENT = "/customer/profile";
 	
-	String CUSTOMER_EDIT = "/customer/";
+	String CUSTOMER_EDIT = "/customer/edit";
 	String CUSTOMER_CHANGE_PASSWORD = "/customer/password";
 	String CUSTOMER_CHANGE_EMAIL = "/customer/email";
 	String CUSTOMER_CHANGE_FIRST_LAST_NAME = "/customer/name";
@@ -51,6 +51,7 @@ public interface ApiConstants {
     String GET_SIZES = "/sizes";
 	
 	//ORDER
-	String CREATE_ORDER = "/order";
+	String CREATE_ORDER = "/customer/order";
+	String CANCEL_ORDER = "/customer/order";
 	
 }

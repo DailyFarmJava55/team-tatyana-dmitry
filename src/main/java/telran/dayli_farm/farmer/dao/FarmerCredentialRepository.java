@@ -14,6 +14,9 @@ public interface FarmerCredentialRepository extends JpaRepository<FarmerCredenti
 
 	FarmerCredential findByFarmer(Farmer farmer);
 	
+	@Query("SELECT f FROM FarmerCredential f WHERE f.farmer.id = :farmerId")
+    Optional<FarmerCredential> findByFarmerId(@Param("farmerId") UUID farmerId);
+	
 	 @Query("SELECT f FROM FarmerCredential f JOIN f.farmer fr WHERE fr.email = :email")
 	    Optional<FarmerCredential> findByFarmerEmail(@Param("email") String email);
 
